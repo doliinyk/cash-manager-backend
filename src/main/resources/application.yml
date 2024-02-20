@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cash_manager_backend
+    password: root
+    username: postgres
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
