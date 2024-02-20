@@ -28,7 +28,7 @@ public class RegularExpens {
     private String description;
 
     @Column(name = "cost", nullable = false)
-    private Float cost;
+    private double cost;
 
     @Column(name = "last_payment_date", nullable = false)
     private OffsetDateTime lastPaymentDate;
