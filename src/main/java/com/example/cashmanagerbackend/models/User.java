@@ -32,7 +32,7 @@ public class User {
     private OffsetDateTime createDate;
 
     @Column(name = "account", nullable = false)
-    private Float account;
+    private Double account;
 
     @Column(name = "delete_date")
     private Instant deleteDate;

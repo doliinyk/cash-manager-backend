@@ -26,7 +26,7 @@ public class SingleExpens {
     private String description;
 
     @Column(name = "cost", nullable = false)
-    private Float cost;
+    private double cost;
 
     @Column(name = "expenses_date", nullable = false)
     private OffsetDateTime expensesDate;

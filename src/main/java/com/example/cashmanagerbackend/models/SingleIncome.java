@@ -26,7 +26,7 @@ public class SingleIncome {
     private String description;
 
     @Column(name = "profit", nullable = false)
-    private Float profit;
+    private double profit;
 
     @Column(name = "income_date", nullable = false)
     private OffsetDateTime incomeDate;

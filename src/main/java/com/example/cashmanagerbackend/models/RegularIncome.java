@@ -28,7 +28,7 @@ public class RegularIncome {
     private String description;
 
     @Column(name = "cost", nullable = false)
-    private Float cost;
+    private Double cost;
 
     @Column(name = "last_payment_date", nullable = false)
     private OffsetDateTime lastPaymentDate;
