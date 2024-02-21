@@ -25,4 +25,10 @@ public class IncomeCategory {
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
+    @ManyToMany
+    @JoinTable(name = "users_income_categories",
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<User> users = new LinkedHashSet<>();
+
 }
