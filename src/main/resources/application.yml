@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/cash_manager_backend
-    password: root
-    username: postgres
+    url: ${DATABASE_URL}
+    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USERNAME}
   jpa:
     properties:
       hibernate:

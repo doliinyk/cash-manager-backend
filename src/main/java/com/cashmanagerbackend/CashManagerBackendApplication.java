@@ -1,4 +1,4 @@
-package com.example.cashmanagerbackend;
+package com.cashmanagerbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

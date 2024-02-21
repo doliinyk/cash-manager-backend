@@ -19,9 +19,9 @@ configurations {
 }
 
 flyway {
-	url = System.getenv('DATABASE_URL') ?: 'jdbc:postgresql://localhost:5432/cash_manager_backend'
-    user = System.getenv('DATABASE_USER') ?: 'postgres'
-    password = System.getenv('DATABASE_PASSWORD') ?: 'root'
+	url = System.getenv('DATABASE_URL')
+    user = System.getenv('DATABASE_USERNAME')
+    password = System.getenv('DATABASE_PASSWORD')
 }
 
 repositories {

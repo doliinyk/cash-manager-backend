@@ -1,8 +1,10 @@
-package com.example.cashmanagerbackend.models;
+package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -12,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
 public class User {
     @Id
@@ -29,6 +32,7 @@ public class User {
     private String email;
 
     @Column(name = "create_date", nullable = false)
+    @CreatedDate
     private OffsetDateTime createDate;
 
     @Column(name = "account", nullable = false)

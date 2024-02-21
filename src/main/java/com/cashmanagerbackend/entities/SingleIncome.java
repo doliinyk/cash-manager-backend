@@ -1,4 +1,4 @@
-package com.example.cashmanagerbackend.models;
+package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,25 +11,25 @@ import java.time.OffsetDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "single_expenses")
-public class SingleExpens {
+@Table(name = "single_incomes")
+public class SingleIncome {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "expenses_id", nullable = false)
+    @Column(name = "income_id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
-    private ExpenseCategory category;
+    private IncomeCategory category;
 
     @Column(name = "description", length = 500)
     private String description;
 
-    @Column(name = "cost", nullable = false)
-    private double cost;
+    @Column(name = "profit", nullable = false)
+    private double profit;
 
-    @Column(name = "expenses_date", nullable = false)
-    private OffsetDateTime expensesDate;
+    @Column(name = "income_date", nullable = false)
+    private OffsetDateTime incomeDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

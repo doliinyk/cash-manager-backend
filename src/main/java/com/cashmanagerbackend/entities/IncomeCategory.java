@@ -1,4 +1,4 @@
-package com.example.cashmanagerbackend.models;
+package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

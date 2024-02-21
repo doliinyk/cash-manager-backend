@@ -1,6 +1,6 @@
-package com.example.cashmanagerbackend.repository;
+package com.cashmanagerbackend.repositories;
 
-import com.example.cashmanagerbackend.models.User;
+import com.cashmanagerbackend.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

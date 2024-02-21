@@ -1,21 +1,23 @@
-package com.example.cashmanagerbackend.models;
+package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.OffsetDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "regular_incomes")
-public class RegularIncome {
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "regular_expenses")
+public class RegularExpens {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "income_id", nullable = false)
+    @Column(name = "expenses_id", nullable = false)
     private Integer id;
 
     @Column(name = "periodicity", nullable = false)
@@ -28,7 +30,7 @@ public class RegularIncome {
     private String description;
 
     @Column(name = "cost", nullable = false)
-    private Double cost;
+    private double cost;
 
     @Column(name = "last_payment_date", nullable = false)
     private OffsetDateTime lastPaymentDate;
