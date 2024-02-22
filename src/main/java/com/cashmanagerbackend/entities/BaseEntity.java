@@ -7,8 +7,6 @@ import lombok.ToString;
 import java.util.UUID;
 
 @MappedSuperclass
-@Data
-@ToString
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
