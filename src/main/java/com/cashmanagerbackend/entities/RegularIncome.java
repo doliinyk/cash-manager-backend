@@ -19,31 +19,25 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "regular_incomes")
-public class RegularIncome {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "income_id", nullable = false)
-    private UUID id;
-
+public class RegularIncome extends BaseEntity{
     @Column(name = "periodicity", nullable = false)
-    private Long periodicity;
+    private long periodicity;
 
     @Column(name = "title", nullable = false, length = 50)
-    @Size(max = 50, message =
-            "Title length must be more than 50 characters")
+    @Size(min = 2,max = 50, message =
+            "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
     private String title;
 
     @Column(name = "description", length = 500)
     @Size(max = 500, message =
-            "Description length must be more than 500 characters")
+            "Description length can't be more than 500")
     private String description;
 
     @Column(name = "profit", nullable = false)
-    private Double profit;
+    private double profit;
 
     @Column(name = "last_payment_date", nullable = false)
-    @NotNull
     private OffsetDateTime lastPaymentDate;
 
     @Column(name = "create_date", nullable = false)

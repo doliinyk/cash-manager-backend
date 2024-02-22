@@ -20,21 +20,14 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id", nullable = false)
-    private UUID id;
-
+public class User extends BaseEntity{
     @Column(name = "login", nullable = false, length = 30)
     @Size(min = 8, max = 20, message
-            = "Login must be between 8 and 20 characters")
+            = "Login must be between 8 and 20")
     @NotBlank(message = "Login is missing")
     private String login;
 
     @Column(name = "password", nullable = false, length = 90)
-    @Size(min = 8, max = 20, message
-            = "Password must be between 8 and 20 characters")
     @NotBlank(message = "Password is missing")
     private String password;
 
@@ -48,7 +41,7 @@ public class User {
     private OffsetDateTime createDate;
 
     @Column(name = "account", nullable = false)
-    private Double account;
+    private double account;
 
     @Column(name = "delete_date")
     private Instant deleteDate;

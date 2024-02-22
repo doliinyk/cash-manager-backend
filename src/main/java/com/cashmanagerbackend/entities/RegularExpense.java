@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.OffsetDateTime;
@@ -18,35 +19,29 @@ import java.util.UUID;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "regular_expenses")
-public class RegularExpense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "expenses_id", nullable = false)
-    private UUID id;
-
+public class RegularExpense extends BaseEntity{
     @Column(name = "periodicity", nullable = false)
-    private Long periodicity;
+    private long periodicity;
 
     @Column(name = "title", nullable = false, length = 50)
-    @Size(max = 50, message =
-            "Title length must be more than 50 characters")
+    @Size(min = 2, max = 50, message =
+            "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
     private String title;
 
     @Column(name = "description", length = 500)
     @Size(max = 500, message =
-            "Description length must be more than 500 characters")
+            "Description length can't be more than 500")
     private String description;
 
     @Column(name = "cost", nullable = false)
-    @NotNull
     private double cost;
 
     @Column(name = "last_payment_date", nullable = false)
-    @NotNull
     private OffsetDateTime lastPaymentDate;
 
     @Column(name = "create_date", nullable = false)
+    @CreatedDate
     private OffsetDateTime createDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

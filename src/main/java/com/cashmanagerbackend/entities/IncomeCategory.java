@@ -14,18 +14,13 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "income_categories")
-public class IncomeCategory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "category_id", nullable = false)
-    private UUID id;
-
-    @Size(max = 50, message = "Title length can't be more than 50")
+public class IncomeCategory extends BaseEntity{
+    @Size(min = 2,max = 50, message = "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "users_income_categories",
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))

@@ -15,12 +15,7 @@ import java.util.UUID;
 @Setter
 @Entity
 @Table(name = "single_expenses")
-public class SingleExpense {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "expenses_id", nullable = false)
-    private UUID id;
-
+public class SingleExpense extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     @NotNull
@@ -28,7 +23,7 @@ public class SingleExpense {
 
     @Column(name = "description", length = 500)
     @Size(max = 500, message =
-            "Description length must be more than 500 characters")
+            "Description length can't be more than 500")
     private String description;
 
     @Column(name = "cost", nullable = false)
