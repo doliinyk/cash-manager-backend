@@ -37,6 +37,9 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.passay:passay:1.6.4'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
 
 	compileOnly 'org.projectlombok:lombok'
 
