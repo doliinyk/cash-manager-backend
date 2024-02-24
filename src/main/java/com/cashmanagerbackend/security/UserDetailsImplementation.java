@@ -12,7 +12,6 @@ public class UserDetailsImplementation implements UserDetails {
 
     private final User user;
 
-    @Autowired
     public UserDetailsImplementation(User user) {
         this.user = user;
     }
