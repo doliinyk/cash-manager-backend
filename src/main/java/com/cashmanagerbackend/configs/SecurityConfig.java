@@ -62,9 +62,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector) throws Exception {
         httpSecurity
-                .cors((cors) -> cors
-                        .configurationSource(configurationSource())
-                )
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/error/**").permitAll();
