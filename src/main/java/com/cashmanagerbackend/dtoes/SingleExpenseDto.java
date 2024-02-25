@@ -1,4 +1,4 @@
-package com.cashmanagerbackend.dto;
+package com.cashmanagerbackend.dtoes;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

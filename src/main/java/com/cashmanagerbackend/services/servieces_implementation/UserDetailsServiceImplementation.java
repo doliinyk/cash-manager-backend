@@ -2,7 +2,6 @@ package com.cashmanagerbackend.services.servieces_implementation;
 
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.repositories.UserRepository;
-import com.cashmanagerbackend.security.UserDetailsImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,10 +20,11 @@ public class UserDetailsServiceImplementation  implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByLogin(username);
+        Optional<User> user = userRepository
+                .findByLogin(username);
         if (user.isEmpty()){
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("User name not found: " + username);
         }
-        return new UserDetailsImplementation(user.get());
+        return user.get();
     }
 }

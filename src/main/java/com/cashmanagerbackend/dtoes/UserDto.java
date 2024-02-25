@@ -1,4 +1,4 @@
-package com.cashmanagerbackend.dto;
+package com.cashmanagerbackend.dtoes;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

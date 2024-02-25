@@ -7,3 +7,16 @@ spring:
     properties:
       hibernate:
         show_sql: true
+server:
+  port: 8000
+  error:
+    include-message: always
+
+rsa:
+  public-key: classpath:certs/public-key.pem
+  private-key: classpath:certs/private-key.pem
+
+logging:
+  level:
+    org:
+      springframework: INFO
