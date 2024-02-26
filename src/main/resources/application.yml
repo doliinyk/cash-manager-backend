@@ -7,8 +7,6 @@ spring:
     properties:
       hibernate:
         show_sql: true
-server:
-  port: 8080
   error:
     include-message: always
 
@@ -22,3 +20,6 @@ logging:
   level:
     org:
       springframework: INFO
+auth-service-property:
+  isuer: "self"
+  minutes-amount: 60
