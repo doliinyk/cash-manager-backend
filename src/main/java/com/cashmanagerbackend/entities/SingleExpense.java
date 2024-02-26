@@ -9,13 +9,12 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "single_expenses")
-public class SingleExpense extends BaseEntity{
+public class SingleExpense extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     @NotNull
@@ -37,5 +36,4 @@ public class SingleExpense extends BaseEntity{
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 }

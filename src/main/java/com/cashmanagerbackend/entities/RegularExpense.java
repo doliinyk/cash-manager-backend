@@ -2,7 +2,6 @@ package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,14 +11,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "regular_expenses")
-public class RegularExpense extends BaseEntity{
+public class RegularExpense extends BaseEntity {
     @Column(name = "periodicity", nullable = false)
     private long periodicity;
 
@@ -48,5 +46,4 @@ public class RegularExpense extends BaseEntity{
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 }

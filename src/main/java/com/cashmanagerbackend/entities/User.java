@@ -13,14 +13,13 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     @Column(name = "login", nullable = false, length = 30)
     @Size(min = 8, max = 20, message
             = "Login must be between 8 and 20")
@@ -63,5 +62,4 @@ public class User extends BaseEntity{
 
     @ManyToMany(mappedBy = "users")
     private Set<IncomeCategory> incomeCategories = new LinkedHashSet<>();
-
 }
