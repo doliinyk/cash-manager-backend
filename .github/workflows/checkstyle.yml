@@ -16,6 +16,6 @@ jobs:
       - name: Run Checkstyle for Java
         uses: dbelyaev/action-checkstyle@v1.5.6
         with:
-          github_token: ${{ secrets.github_token }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           level: warning
