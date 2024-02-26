@@ -8,15 +8,14 @@ import lombok.Setter;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "expense_categories")
-public class ExpenseCategory extends BaseEntity{
+public class ExpenseCategory extends BaseEntity {
     @Column(name = "title", nullable = false, length = 50)
-    @Size(min = 2,max = 50, message = "Title must be between 2 and 50")
+    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
     private String title;
 

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -69,7 +68,6 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToMany(mappedBy = "users")
     private Set<IncomeCategory> incomeCategories = new LinkedHashSet<>();
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.EMPTY_LIST;
@@ -87,21 +85,21 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return deleteDate != null;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return deleteDate != null;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return deleteDate != null;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return deleteDate == null;
     }
 }

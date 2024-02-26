@@ -2,7 +2,6 @@ package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,19 +11,18 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "regular_incomes")
-public class RegularIncome extends BaseEntity{
+public class RegularIncome extends BaseEntity {
     @Column(name = "periodicity", nullable = false)
     private long periodicity;
 
     @Column(name = "title", nullable = false, length = 50)
-    @Size(min = 2,max = 50, message =
+    @Size(min = 2, max = 50, message =
             "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
     private String title;

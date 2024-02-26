@@ -40,8 +40,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
-	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: '6.2.2'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: '3.2.3'
+	implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
 
 	compileOnly 'org.projectlombok:lombok'
 

@@ -8,13 +8,15 @@ spring:
       hibernate:
         show_sql: true
 server:
-  port: 8000
+  port: 8080
   error:
     include-message: always
 
-rsa:
-  public-key: classpath:certs/public-key.pem
-  private-key: classpath:certs/private-key.pem
+cashmanager.security.rsa:
+  access-public-key: classpath:certs/access-public-key.pem
+  access-private-key: classpath:certs/access-private-key.pem
+  refresh-public-key: classpath:certs/refresh-public-key.pem
+  refresh-private-key: classpath:certs/refresh-private-key.pem
 
 logging:
   level:

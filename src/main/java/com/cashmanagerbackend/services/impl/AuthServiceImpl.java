@@ -1,9 +1,8 @@
-package com.cashmanagerbackend.services.servieces_implementation;
+package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.repositories.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.cashmanagerbackend.services.AuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,16 +16,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthService {
+@RequiredArgsConstructor
+public class AuthServiceImpl implements AuthService {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
-    @Autowired
-    private JwtEncoder jwtEncoder;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
-
+    private final JwtEncoder jwtEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
@@ -39,14 +34,11 @@ public class AuthService {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
-                .expiresAt(now.plus(10, ChronoUnit.HOURS))
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
-
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
     }
-
-
-
 }
