@@ -1,3 +1,11 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: '[Bug Report] Clear and concise conditions, e.g. "[Profile] User cannot see his own profile while navigating to it"'
+labels: 'bug'
+assignees: ''
+---
+
 # Bug report
 
 ## Environment
