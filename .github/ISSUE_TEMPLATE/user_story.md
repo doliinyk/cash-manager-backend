@@ -2,7 +2,7 @@
 name: User story
 about: Describe user experience 
 title: '[User Story] Clear and concise goal, e.g. "[Login] User can sign up, sign in, and sign out with email or social media account"'
-labels: bug
+labels: user-story
 assignees: ''
 ---
 
