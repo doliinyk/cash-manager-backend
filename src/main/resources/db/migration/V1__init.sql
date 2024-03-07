@@ -1,12 +1,15 @@
 
 CREATE TABLE users(
-                      id UUID PRIMARY KEY,
-                      login varchar(30) not null,
-                      password varchar(90) not null,
-                      email varchar(50) UNIQUE not null,
-                      create_date timestamp with time zone not null,
-                      account real not null,
-                      delete_date timestamp without time zone
+    id UUID PRIMARY KEY,
+    login varchar(30) not null,
+    password varchar(90) not null,
+    email varchar(50) UNIQUE not null,
+    create_date timestamp with time zone not null,
+    account real not null,
+    delete_date timestamp without time zone,
+    refresh_token text,
+    activated boolean not null,
+    activation_uuid UUID not null
 );
 CREATE TABLE expense_categories
 (

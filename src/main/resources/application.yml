@@ -7,8 +7,22 @@ spring:
     properties:
       hibernate:
         show_sql: true
+    open-in-view: false
   error:
     include-message: always
+  boot:
+    admin:
+      mail:
+        from: ${EMAIL}
+  mail:
+    password: ${EMAIL_PASSWORD} # ${EMAIL_PASSWORD}
+    username: ${EMAIL}  #${EMAIL}
+    port: 465
+    host: smtp.gmail.com
+    protocol: smtps
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 cashmanager.security.rsa:
   access-public-key: classpath:certs/access-public-key.pem
@@ -22,4 +36,5 @@ logging:
       springframework: INFO
 auth-service-property:
   isuer: "self"
-  minutes-amount: 60
+  refresh-token-lifetime: 60
+  access-token-lifetime: 15
