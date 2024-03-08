@@ -1,9 +1,7 @@
 package com.cashmanagerbackend.controllers;
 
-import com.cashmanagerbackend.dtos.requests.RefreshToken;
+import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
-import com.cashmanagerbackend.dtos.requests.ActivationTokenDTO;
-import com.cashmanagerbackend.dtos.requests.UserRegisterDto;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.services.AuthService;
 import com.cashmanagerbackend.utils.UserAlreadyExistAuthenticationException;
@@ -18,6 +16,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,7 +25,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -49,17 +47,33 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public AccessRefreshTokenDTO refresh(@RequestBody RefreshToken refreshToken){
-        return authService.refreshTokens(refreshToken);
+    public AccessRefreshTokenDTO refresh(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO){
+        return authService.refreshTokens(refreshTokenDTO);
     }
+
 
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody @Valid UserRegisterDto userRegisterDto, BindingResult bindingResult) throws MessagingException, UnsupportedEncodingException {
         return authService.registerUser(userRegisterDto, bindingResult);
     }
 
+    @PostMapping("/send-activation-email")
+    public void sendActivationEmail(@RequestBody @Valid SendActivationEmailDTO sendActivationEmailDTO, BindingResult bindingResult) throws MessagingException, UnsupportedEncodingException {
+        authService.sendActivationEmail(sendActivationEmailDTO);
+    }
+
+    @PostMapping("/forgot")
+    public void forgotPassword(@RequestBody @Valid EmailDTO emailDTO, BindingResult bindingResult) throws MessagingException, UnsupportedEncodingException {
+        authService.forgotPassword(emailDTO);
+    }
+
+    @PostMapping("/reset")
+    public void resetPassword(@RequestBody @Valid ResetPasswordDTO resetPasswordDTO, BindingResult bindingResult){
+        authService.resetPassword(resetPasswordDTO);
+    }
+
     @PostMapping("/activate")
-    public void activate(@RequestBody ActivationTokenDTO activationTokenDTO) {
+    public void activate(@RequestBody @Valid ActivationTokenDTO activationTokenDTO, BindingResult bindingResult) {
         authService.activateUser(activationTokenDTO);
     }
 

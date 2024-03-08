@@ -1,9 +1,6 @@
 package com.cashmanagerbackend.services.impl;
 
-import com.auth0.jwt.JWT;
-import com.cashmanagerbackend.dtos.requests.ActivationTokenDTO;
-import com.cashmanagerbackend.dtos.requests.RefreshToken;
-import com.cashmanagerbackend.dtos.requests.UserRegisterDto;
+import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.repositories.UserRepository;
@@ -26,7 +23,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -92,20 +88,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void activateUser(ActivationTokenDTO activationTokenDTO) throws UserAlreadyExistAuthenticationException {
         User user = userRepository.findById(activationTokenDTO.userId()).orElseThrow(() ->
-                 new UserAlreadyExistAuthenticationException("user with this id don't exist"));
-        if (user.getActivationUUID().equals(UUID.fromString(activationTokenDTO.activationToken()))){
+                new UserAlreadyExistAuthenticationException("user with this id don't exist"));
+        if (user.getActivationUUID().equals(UUID.fromString(activationTokenDTO.activationToken()))) {
             user.setActivated(true);
             userRepository.save(user);
-        }else {
-            throw new UserAlreadyExistAuthenticationException("wrong activation token");
+        } else {
+            throw new UserAlreadyExistAuthenticationException("Wrong activation token");
         }
     }
 
     @Override
-    public Map<String,String> registerUser(UserRegisterDto userRegisterDto, BindingResult bindingResult) throws MessagingException, UnsupportedEncodingException {
-        if (userRepository.existsByLogin(userRegisterDto.login())){
+    public Map<String, String> registerUser(UserRegisterDto userRegisterDto, BindingResult bindingResult) throws MessagingException, UnsupportedEncodingException {
+        if (userRepository.existsByLogin(userRegisterDto.login())) {
             throw new UserAlreadyExistAuthenticationException("User with this login already exist");
-        }else if (userRepository.existsByEmail(userRegisterDto.email())){
+        } else if (userRepository.existsByEmail(userRegisterDto.email())) {
             throw new UserAlreadyExistAuthenticationException("User with this email already exist");
         }
         User user = UserRegisterDto.dtoToEntity(userRegisterDto);
@@ -114,21 +110,70 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(userRegisterDto.password()));
         userRepository.save(user);
         sendRegistrationConfirmationMail(user);
-        Map<String,String> map = new HashMap<>();
-        map.put("userId",userRepository.findByLogin(userRegisterDto.login()).get().getId().toString());
+        Map<String, String> map = new HashMap<>();
+        map.put("userId", userRepository.findByLogin(userRegisterDto.login()).get().getId().toString());
         return map;
     }
 
+
+
     @Override
-    public AccessRefreshTokenDTO refreshTokens(RefreshToken refreshToken) {
-        Jwt refreshTokenJwt = jwtRefreshDecoder.decode(refreshToken.refreshToken());
+    public AccessRefreshTokenDTO refreshTokens(RefreshTokenDTO refreshTokenDTO) {
+        Jwt refreshTokenJwt = jwtRefreshDecoder.decode(refreshTokenDTO.refreshToken());
         User user = userRepository.findById(UUID.fromString(refreshTokenJwt.getSubject())).get();
 
-        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshToken.refreshToken())) {
+        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshTokenDTO.refreshToken())) {
             throw new JwtException("Provided Jwt refresh token doesn't belong to its user");
         }
 
         return generateTokens(user);
+    }
+
+    @Override
+    public void sendActivationEmail(SendActivationEmailDTO sendActivationEmailDTO) throws MessagingException, UnsupportedEncodingException {
+        User user = userRepository.findById(sendActivationEmailDTO.id()).get();
+        user.setActivationUUID(UUID.randomUUID());
+        userRepository.save(user);
+        sendRegistrationConfirmationMail(user);
+    }
+
+    @Override
+    public void forgotPassword(EmailDTO emailDTO) throws MessagingException, UnsupportedEncodingException {
+        User user = userRepository.findByEmail(emailDTO.email())
+                .orElseThrow(() -> new UserAlreadyExistAuthenticationException("User with this email doesn't exist"));
+        user.setActivationUUID(UUID.randomUUID());
+        userRepository.save(user);
+        sendForgotPasswordMail(user);
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        User user = userRepository.findById(resetPasswordDTO.id()).orElseThrow(
+                () -> new UserAlreadyExistAuthenticationException("User with this id doesn't exist"));
+        if (user.getActivationUUID().equals(resetPasswordDTO.securityCode())){
+            user.setPassword(passwordEncoder.encode(resetPasswordDTO.password()));
+            userRepository.save(user);
+        }else throw new UserAlreadyExistAuthenticationException("Wrong security code");
+    }
+
+    private void sendForgotPasswordMail(User user) throws MessagingException, UnsupportedEncodingException {
+        String senderName = "CashManager";
+        String subject = "Need to reset your password?";
+        String content = "Hi [[name]],<br>"
+                + "There was a request to change your password!<br>"
+                + "Use your secret code!<br>"
+                + "<h3>" + user.getActivationUUID() + "</h3>"
+                + "If you did not make this request then please ignore this email.<br>"
+                + senderName + ".";
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setTo(user.getEmail());
+        helper.setFrom(email, senderName);
+        helper.setSubject(subject);
+        content = content.replace("[[name]]", user.getLogin());
+        helper.setText(content, true);
+        javaMailSender.send(message);
     }
 
     private void sendRegistrationConfirmationMail(User user) throws MessagingException, UnsupportedEncodingException {
@@ -168,8 +213,4 @@ public class AuthServiceImpl implements AuthService {
 //            "&activationToken=" + user.getActivationUUID();
 //    content = content.replace("[[URL]]", verifyURL);
     }
-
-
-
-
 }

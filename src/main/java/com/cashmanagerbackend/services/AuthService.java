@@ -1,9 +1,7 @@
 package com.cashmanagerbackend.services;
 
-import com.cashmanagerbackend.dtos.requests.RefreshToken;
+import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
-import com.cashmanagerbackend.dtos.requests.ActivationTokenDTO;
-import com.cashmanagerbackend.dtos.requests.UserRegisterDto;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.utils.UserAlreadyExistAuthenticationException;
 import jakarta.mail.MessagingException;
@@ -19,5 +17,11 @@ public interface AuthService {
 
     Map<String, String> registerUser(UserRegisterDto userRegisterDto, BindingResult bindingResult) throws UserAlreadyExistAuthenticationException, MessagingException, UnsupportedEncodingException;
 
-    AccessRefreshTokenDTO refreshTokens(RefreshToken refreshToken);
+    AccessRefreshTokenDTO refreshTokens(RefreshTokenDTO refreshTokenDTO);
+
+    void sendActivationEmail(SendActivationEmailDTO sendActivationEmailDTO) throws MessagingException, UnsupportedEncodingException;
+
+    void forgotPassword(EmailDTO emailDTO) throws MessagingException, UnsupportedEncodingException;
+
+    void resetPassword(ResetPasswordDTO resetPasswordDTO);
 }
