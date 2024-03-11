@@ -3,9 +3,8 @@ package com.cashmanagerbackend.services;
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
 import com.cashmanagerbackend.entities.User;
-import com.cashmanagerbackend.utils.UserAlreadyExistAuthenticationException;
+import com.cashmanagerbackend.exceptions.UserAlreadyExistAuthenticationException;
 import jakarta.mail.MessagingException;
-import org.springframework.validation.BindingResult;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -15,7 +14,7 @@ public interface AuthService {
 
     void activateUser(ActivationTokenDTO activationTokenDTO) throws UserAlreadyExistAuthenticationException;
 
-    Map<String, String> registerUser(UserRegisterDto userRegisterDto, BindingResult bindingResult) throws UserAlreadyExistAuthenticationException, MessagingException, UnsupportedEncodingException;
+    Map<String, String> registerUser(UserRegisterDTO userRegisterDto) throws UserAlreadyExistAuthenticationException, MessagingException, UnsupportedEncodingException;
 
     AccessRefreshTokenDTO refreshTokens(RefreshTokenDTO refreshTokenDTO);
 

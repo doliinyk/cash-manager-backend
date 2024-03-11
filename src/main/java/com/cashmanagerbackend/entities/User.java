@@ -30,7 +30,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(name = "password", nullable = false, length = 90)
     @NotBlank(message = "Password is missing")
-    @Size(min = 8, max = 90, message = "Password must be between 3 and 30")
     private String password;
 
     @Column(name = "email", nullable = false, length = 50)
@@ -51,7 +50,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "refresh_token")
     private String refreshToken;
 
-    @Column(name = "activated")
+    @Column(name = "activated", nullable = false)
     private boolean activated;
 
     @Column(name = "activation_uuid")

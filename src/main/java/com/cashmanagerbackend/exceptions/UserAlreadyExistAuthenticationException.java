@@ -1,4 +1,4 @@
-package com.cashmanagerbackend.utils;
+package com.cashmanagerbackend.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -8,9 +8,11 @@ CREATE TABLE users(
     account real not null,
     delete_date timestamp without time zone,
     refresh_token text,
-    activated boolean not null,
+    activated boolean,
     activation_uuid UUID not null
 );
+create unique index login on users using btree (login);
+create unique index email on users using btree (email);
 CREATE TABLE expense_categories
 (
     id UUID PRIMARY KEY NOT NULL,

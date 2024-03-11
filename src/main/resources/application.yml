@@ -15,8 +15,8 @@ spring:
       mail:
         from: ${EMAIL}
   mail:
-    password: ${EMAIL_PASSWORD} # ${EMAIL_PASSWORD}
-    username: ${EMAIL}  #${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    username: ${EMAIL}
     port: 465
     host: smtp.gmail.com
     protocol: smtps
@@ -34,7 +34,9 @@ logging:
   level:
     org:
       springframework: INFO
-auth-service-property:
-  isuer: "self"
-  refresh-token-lifetime: 60
-  access-token-lifetime: 15
+cashmanager:
+  security:
+    jwt:
+      isuer: "self"
+      refresh-token-lifetime: 60
+      access-token-lifetime: 15

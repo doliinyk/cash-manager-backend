@@ -43,6 +43,7 @@ public class JwtConfig {
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }
+
     @Bean
     @Qualifier("refreshEncoder")
     public JwtEncoder jwtRefreshEncoder() {
