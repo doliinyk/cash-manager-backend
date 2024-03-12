@@ -1,0 +1,59 @@
+name: Build and Deploy
+on:
+  workflow_dispatch:
+  push:
+    branches: [develop]
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+  
+  EMAIL: ${{ secrets.EMAIL }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+  IMAGE_ID: ghcr.io/${{ github.repository }}:latest
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 17
+          cache: gradle
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build and test with Gradle
+        run: ./gradlew build
+
+      - name: Build Docker image with Gradle
+        run: ./gradlew bootBuildImage
+
+      - name: Get version from built Docker image
+        run: |
+          DOCKER_IMAGE_ID=$(docker image ls cash-manager-backend --format '{{ .ID }}')
+          echo "IMAGE_VERSION=$(docker image inspect --format='{{ index .Config.Labels "org.opencontainers.image.version" }}' $DOCKER_IMAGE_ID)" >> $GITHUB_ENV
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag and push Docker image
+        run: |
+          docker tag cash-manager-backend:$IMAGE_VERSION $IMAGE_ID
+          docker push $IMAGE_ID
