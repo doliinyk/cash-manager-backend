@@ -53,8 +53,8 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
-    @Column(name = "activation_uuid")
-    private UUID activationUUID;
+    @Column(name = "activation_refresh_uuid")
+    private UUID activationRefreshUUID;
 
     @OneToMany(mappedBy = "user")
     private Set<RegularExpense> regularExpenses = new LinkedHashSet<>();

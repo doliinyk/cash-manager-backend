@@ -23,13 +23,11 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-
 cashmanager.security.rsa:
   access-public-key: classpath:certs/access-public-key.pem
   access-private-key: classpath:certs/access-private-key.pem
   refresh-public-key: classpath:certs/refresh-public-key.pem
   refresh-private-key: classpath:certs/refresh-private-key.pem
-
 logging:
   level:
     org:
@@ -37,6 +35,6 @@ logging:
 cashmanager:
   security:
     jwt:
-      isuer: "self"
-      refresh-token-lifetime: 60
-      access-token-lifetime: 15
+      issuer: "self"
+      refresh-token-minutes-amount: 60
+      access-token-minutes-amount: 15

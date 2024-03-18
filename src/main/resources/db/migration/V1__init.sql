@@ -9,7 +9,7 @@ CREATE TABLE users(
     delete_date timestamp without time zone,
     refresh_token text,
     activated boolean,
-    activation_uuid UUID not null
+    activation_refresh_uuid UUID
 );
 create unique index login on users using btree (login);
 create unique index email on users using btree (email);

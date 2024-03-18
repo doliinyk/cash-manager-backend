@@ -1,6 +1,5 @@
-package com.cashmanagerbackend.exceptions.exception_hendler;
+package com.cashmanagerbackend.exceptions.hendler;
 
-import com.cashmanagerbackend.exceptions.UserAlreadyExistAuthenticationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -9,15 +8,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@RestControllerAdvice("com.cashmanagerbackend.controllers")
-public class RestExceptionHandler  {
+@RestControllerAdvice()
+public class ValidationExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(
@@ -32,15 +31,15 @@ public class RestExceptionHandler  {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = UserAlreadyExistAuthenticationException.class)
+    @ExceptionHandler(value = ResponseStatusException.class)
     public Map<String, String> handleUserAlreadyExistAuthenticationExceptions(
-            UserAlreadyExistAuthenticationException ex) {
+            ResponseStatusException ex) {
 
         Map<String, String> errors = new LinkedHashMap<>();
         errors.put("timestamp", LocalDateTime.now().toString());
-        errors.put("status", "400");
+        errors.put("status", String.valueOf(ex.getStatusCode().value()));
         errors.put("error", "Bad request");
-        errors.put("message", ex.getMessage());
+        errors.put("message", ex.getReason());
         return errors;
     }
 }

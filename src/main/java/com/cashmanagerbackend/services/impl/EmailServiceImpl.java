@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
-    @Value("${EMAIL}")
+    @Value("${spring.mail.username}")
     private String email;
     public void sendForgotPasswordMail(User user) throws MessagingException, UnsupportedEncodingException {
         String senderName = "CashManager";
@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService {
         String content = "Hi [[name]],<br>"
                 + "There was a request to change your password!<br>"
                 + "Use your secret code!<br>"
-                + "<h3>" + user.getActivationUUID() + "</h3>"
+                + "<h3>" + user.getActivationRefreshUUID() + "</h3>"
                 + "If you did not make this request then please ignore this email.<br>"
                 + senderName + ".";
 
@@ -43,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
         String subject = "Please verify your registration";
         String content = "Dear [[name]],<br>"
                 + "Please check code below to verify your registration:<br>"
-                + "<h3>" + user.getActivationUUID() + "</h3>"
+                + "<h3>" + user.getActivationRefreshUUID() + "</h3>"
                 + "Thank you,<br>"
                 + senderName + ".";
 

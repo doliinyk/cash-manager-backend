@@ -3,10 +3,9 @@ package com.cashmanagerbackend.mappers;
 import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.entities.User;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
-@Mapper
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface UserMapper {
-    UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
     User dtoToEntity(UserRegisterDTO userRegisterDTO);
 }

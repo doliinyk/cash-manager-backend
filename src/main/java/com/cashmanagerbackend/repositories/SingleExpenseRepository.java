@@ -4,6 +4,8 @@ import com.cashmanagerbackend.entities.SingleExpense;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
-public interface SingleExpensRepository extends JpaRepository<SingleExpense, Integer> {
+public interface SingleExpenseRepository extends JpaRepository<SingleExpense, UUID> {
 }
