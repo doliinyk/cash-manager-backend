@@ -15,30 +15,28 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
 @Getter
 @Setter
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements UserDetails {
-    @Column(name = "login", nullable = false, length = 30)
-    @Size(min = 3, max = 30, message
-            = "Login must be between 3 and 30")
     @NotBlank(message = "Login is missing")
+    @Size(min = 3, max = 30, message = "Login must be between 3 and 30")
+    @Column(name = "login", nullable = false, length = 30)
     private String login;
 
-    @Column(name = "password", nullable = false, length = 90)
     @NotBlank(message = "Password is missing")
+    @Column(name = "password", nullable = false, length = 90)
     private String password;
 
-    @Column(name = "email", nullable = false, length = 50)
-    @Email(message = "Email should be valid")
     @NotBlank(message = "Email is missing")
+    @Email(message = "Email should be valid")
+    @Column(name = "email", nullable = false, length = 50)
     private String email;
 
-    @Column(name = "create_date", nullable = false)
     @CreatedDate
+    @Column(name = "create_date", nullable = false)
     private LocalDateTime createDate;
 
     @Column(name = "account", nullable = false)
@@ -57,31 +55,26 @@ public class User extends BaseEntity implements UserDetails {
     private UUID activationRefreshUUID;
 
     @OneToMany(mappedBy = "user")
-    private Set<RegularExpense> regularExpenses = new LinkedHashSet<>();
+    private transient Set<RegularExpense> regularExpenses = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<RegularIncome> regularIncomes = new LinkedHashSet<>();
+    private transient Set<RegularIncome> regularIncomes = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<SingleExpense> singleExpenses = new LinkedHashSet<>();
+    private transient Set<SingleExpense> singleExpenses = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<SingleIncome> singleIncomes = new LinkedHashSet<>();
+    private transient Set<SingleIncome> singleIncomes = new LinkedHashSet<>();
 
     @ManyToMany(mappedBy = "users")
-    private Set<ExpenseCategory> expenseCategories = new LinkedHashSet<>();
+    private transient Set<ExpenseCategory> expenseCategories = new LinkedHashSet<>();
 
     @ManyToMany(mappedBy = "users")
-    private Set<IncomeCategory> incomeCategories = new LinkedHashSet<>();
+    private transient Set<IncomeCategory> incomeCategories = new LinkedHashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+        return List.of();
     }
 
     @Override
@@ -90,7 +83,14 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() { return deleteDate == null;}
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return deleteDate == null;
+    }
 
     @Override
     public boolean isAccountNonLocked() {

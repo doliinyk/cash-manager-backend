@@ -15,26 +15,23 @@ import java.time.OffsetDateTime;
 @Entity
 @Table(name = "single_incomes")
 public class SingleIncome extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull(message = "Category can't be null")
     @JoinColumn(name = "category_id", nullable = false)
-    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private IncomeCategory category;
 
+    @Size(max = 500, message = "Description length can't be more than 500")
     @Column(name = "description", length = 500)
-    @Size(max = 500, message =
-            "Description length can't be more than 500")
     private String description;
 
     @Column(name = "profit", nullable = false)
     private double profit;
 
     @Column(name = "income_date", nullable = false)
-    @NotNull
     private OffsetDateTime incomeDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 }

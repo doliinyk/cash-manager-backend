@@ -1,64 +1,63 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id "org.flywaydb.flyway" version "10.0.0"
+    id 'java'
+    id 'idea'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id "org.flywaydb.flyway" version "10.10.0"
 }
 
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
+group = 'com.cashmanagerbackend'
+version = '0.0.1'
 
-java {
-	sourceCompatibility = '17'
-}
+java.sourceCompatibility = '17'
+idea.module.downloadJavadoc = true
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 flyway {
-	url = System.getenv('DATABASE_URL')
+    url = System.getenv('DATABASE_URL')
     user = System.getenv('DATABASE_USERNAME')
     password = System.getenv('DATABASE_PASSWORD')
 }
 
-repositories {
-	mavenCentral()
-}
+repositories.mavenCentral()
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.passay:passay:1.6.4'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.security:spring-security-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-mail'
-	implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 
-	compileOnly 'org.projectlombok:lombok'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.passay:passay:1.6.4'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 
-	runtimeOnly 'org.postgresql:postgresql'
+    compileOnly 'org.projectlombok:lombok'
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
 
-	annotationProcessor 'org.projectlombok:lombok'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation group: 'com.h2database', name: 'h2', version: '2.2.224'
+    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    testImplementation 'com.h2database:h2'
+    testImplementation 'org.projectlombok:lombok'
+    testImplementation 'com.icegreen:greenmail:2.0.1'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
-
-

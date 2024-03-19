@@ -1,12 +1,7 @@
 package com.cashmanagerbackend.services;
 
-import com.cashmanagerbackend.entities.User;
-import jakarta.mail.MessagingException;
-
-import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 public interface EmailService {
-    void sendForgotPasswordMail(User user) throws MessagingException, UnsupportedEncodingException;
-
-    void sendRegistrationConfirmationMail(User user) throws MessagingException, UnsupportedEncodingException;
+    void sendMail(String to, String subject, String template, Map<String, Object> variables, String locale);
 }

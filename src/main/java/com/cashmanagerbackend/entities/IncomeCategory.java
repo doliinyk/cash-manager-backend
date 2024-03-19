@@ -14,8 +14,8 @@ import java.util.Set;
 @Entity
 @Table(name = "income_categories")
 public class IncomeCategory extends BaseEntity {
-    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
+    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
@@ -24,5 +24,4 @@ public class IncomeCategory extends BaseEntity {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new LinkedHashSet<>();
-
 }

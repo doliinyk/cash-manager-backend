@@ -8,7 +8,6 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -16,7 +15,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.stereotype.Component;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,8 +27,7 @@ public class JwtConfig {
         return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.accessPublicKey()).build();
     }
 
-    @Bean
-    @Qualifier("refreshDecoder")
+    @Bean("refreshDecoder")
     public JwtDecoder jwtRefreshDecoder() {
         return NimbusJwtDecoder.withPublicKey(rsaKeyProperties.refreshPublicKey()).build();
     }
@@ -41,15 +38,16 @@ public class JwtConfig {
         JWK jwk = new RSAKey.Builder(rsaKeyProperties.accessPublicKey()).privateKey(rsaKeyProperties.accessPrivateKey()).build();
 
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+
         return new NimbusJwtEncoder(jwks);
     }
 
-    @Bean
-    @Qualifier("refreshEncoder")
+    @Bean("refreshEncoder")
     public JwtEncoder jwtRefreshEncoder() {
         JWK jwk = new RSAKey.Builder(rsaKeyProperties.refreshPublicKey()).privateKey(rsaKeyProperties.refreshPrivateKey()).build();
 
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+
         return new NimbusJwtEncoder(jwks);
     }
 }

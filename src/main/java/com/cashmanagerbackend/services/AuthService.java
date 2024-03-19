@@ -1,25 +1,27 @@
 package com.cashmanagerbackend.services;
 
-import com.cashmanagerbackend.dtos.requests.*;
+import com.cashmanagerbackend.dtos.requests.EmailDTO;
+import com.cashmanagerbackend.dtos.requests.RefreshTokenDTO;
+import com.cashmanagerbackend.dtos.requests.ResetPasswordDTO;
+import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
 import com.cashmanagerbackend.entities.User;
-import jakarta.mail.MessagingException;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
 
 public interface AuthService {
-    AccessRefreshTokenDTO generateTokens(User user);
+    UUID registerUser(UserRegisterDTO userRegisterDTO, String locale, Map<String, Object> variables);
 
-    void activateUser(ActivationTokenDTO activationTokenDTO) ;
+    void activateUser(UUID userId, String activationToken);
 
-    Map<String, String> registerUser(UserRegisterDTO userRegisterDto) throws MessagingException, UnsupportedEncodingException;
+    void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables);
 
-    AccessRefreshTokenDTO refreshTokens(RefreshTokenDTO refreshTokenDTO);
+    AccessRefreshTokenDTO loginUser(User user);
 
-    void sendActivationEmail(SendActivationEmailDTO sendActivationEmailDTO) throws MessagingException, UnsupportedEncodingException;
+    AccessRefreshTokenDTO refreshUserTokens(RefreshTokenDTO refreshTokenDTO);
 
-    void forgotPassword(EmailDTO emailDTO) throws MessagingException, UnsupportedEncodingException;
+    void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables);
 
     void resetPassword(ResetPasswordDTO resetPasswordDTO);
 }
