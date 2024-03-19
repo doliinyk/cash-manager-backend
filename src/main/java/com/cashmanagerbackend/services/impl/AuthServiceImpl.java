@@ -10,6 +10,8 @@ import com.cashmanagerbackend.mappers.UserMapper;
 import com.cashmanagerbackend.repositories.UserRepository;
 import com.cashmanagerbackend.services.AuthService;
 import com.cashmanagerbackend.services.EmailService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     @Value("${cashmanager.security.jwt.issuer}")
     private String issuer;
@@ -42,25 +45,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final EmailService emailService;
     private final JwtEncoder jwtAccessEncoder;
+    @Qualifier("refreshEncoder")
     private final JwtEncoder jwtRefreshEncoder;
     private final JwtDecoder jwtRefreshDecoder;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthServiceImpl(UserRepository userRepository,
-                           UserMapper userMapper,
-                           EmailService emailService,
-                           JwtEncoder jwtAccessEncoder,
-                           @Qualifier("refreshEncoder") JwtEncoder jwtRefreshEncoder,
-                           @Qualifier("refreshDecoder") JwtDecoder jwtRefreshDecoder,
-                           PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.emailService = emailService;
-        this.jwtAccessEncoder = jwtAccessEncoder;
-        this.jwtRefreshEncoder = jwtRefreshEncoder;
-        this.jwtRefreshDecoder = jwtRefreshDecoder;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     @Transactional
@@ -114,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    @SneakyThrows
     public AccessRefreshTokenDTO loginUser(User user) {
         user = userRepository.save(user);
 
