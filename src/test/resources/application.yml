@@ -1,9 +1,27 @@
 spring:
+  application:
+    name: cash-manager-backend
+  profiles:
+    active: test
   datasource:
     url: jdbc:h2:mem:test_bd
     driverClassName: org.h2.Driver
   jpa:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
-    properties:
-      hibernate:
-        show_sql: true
+  mail:
+    username: test
+    password: test
+    host: smtp.test.com
+    port: 465
+
+cashmanager:
+  security:
+    jwt:
+      issuer: test
+      access-token-minutes-amount: 15
+      refresh-token-minutes-amount: 120
+    rsa:
+      access-public-key: classpath:certs/access-public-key.test.pem
+      access-private-key: classpath:certs/access-private-key.test.pem
+      refresh-public-key: classpath:certs/refresh-public-key.test.pem
+      refresh-private-key: classpath:certs/refresh-private-key.test.pem

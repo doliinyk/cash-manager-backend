@@ -1,9 +1,55 @@
 spring:
+  application:
+    name: cash-manager-backend
+  profiles:
+    active: default
   datasource:
     url: ${DATABASE_URL}
     password: ${DATABASE_PASSWORD}
     username: ${DATABASE_USERNAME}
   jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  mail:
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    host: smtp.gmail.com
+    port: 465
+    protocol: smtps
     properties:
-      hibernate:
-        show_sql: true
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+  messages:
+    basename: i18n/messages
+    fallback-to-system-locale: false
+
+springdoc:
+  api-docs:
+    path: /api/v1/api-docs
+  swagger-ui:
+    path: /api/v1/swagger-ui
+    disable-swagger-default-url: true
+
+cashmanager:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER}
+      access-token-minutes-amount: ${JWT_ACCESS_TOKEN_MINUTES_AMOUNT}
+      refresh-token-minutes-amount: ${JWT_REFRESH_TOKEN_MINUTES_AMOUNT}
+    rsa:
+      access-public-key: classpath:certs/access-public-key.pem
+      access-private-key: classpath:certs/access-private-key.pem
+      refresh-public-key: classpath:certs/refresh-public-key.pem
+      refresh-private-key: classpath:certs/refresh-private-key.pem
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+
+logging:
+  level:
+    org:
+      springframework: INFO

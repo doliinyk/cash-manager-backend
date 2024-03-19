@@ -1,0 +1,26 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title th:text="#{forgot.title}"></title>
+</head>
+<body>
+	<h1 th:text="#{forgot.title}"></h1>
+	<p><span th:text="#{greeting}"></span> <span th:text="${login}"></span>,</p>
+	<p>
+		<span th:text="#{forgot.entry}"></span>.
+		<span th:if="${isFrontendRequest}">
+			<span th:text="#{forgot.link.is_frontend}"></span>:<br>
+			<a th:href="${redirectUrl}" th:text="#{forgot.link.activate}"></a>
+		</span>
+		<span th:unless="${isFrontendRequest}">
+			<span th:text="#{forgot.link.is_not_frontend}"></span>:<br>
+			<span th:text="${redirectUrl}"></span>
+		</span>
+	</p>
+	<p><span th:text="#{forgot.ending}"></span>.</p>
+	<p>
+		<span th:text="#{leaving}"></span>,<br>
+		CashManager.
+	</p>
+</body>
+</html>

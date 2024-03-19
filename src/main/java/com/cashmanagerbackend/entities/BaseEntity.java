@@ -1,11 +1,11 @@
 package com.cashmanagerbackend.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
 
 import java.util.UUID;
 
+@Getter
 @MappedSuperclass
 public abstract class BaseEntity {
     @Id
