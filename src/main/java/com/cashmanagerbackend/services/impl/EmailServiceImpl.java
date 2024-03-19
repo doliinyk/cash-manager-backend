@@ -44,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
         MimeMessage message = mailSender.createMimeMessage();
 
         try {
-            Locale locale = localeCode != null ? Locale.forLanguageTag(localeCode) : Locale.of("uk");
+            Locale locale = localeCode != null ? Locale.forLanguageTag(localeCode) : Locale.ROOT;
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
             Context context = new Context(locale);
 
