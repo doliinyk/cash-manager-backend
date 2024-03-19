@@ -1,78 +1,64 @@
 package com.cashmanagerbackend.services.impl;
 
-import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.services.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
-    private final JavaMailSender javaMailSender;
-    @Value("${spring.mail.username}")
-    private String email;
-    public void sendForgotPasswordMail(User user) throws MessagingException, UnsupportedEncodingException {
-        String senderName = "CashManager";
-        String subject = "Need to reset your password?";
-        String content = "Hi [[name]],<br>"
-                + "There was a request to change your password!<br>"
-                + "Use your secret code!<br>"
-                + "<h3>" + user.getActivationRefreshUUID() + "</h3>"
-                + "If you did not make this request then please ignore this email.<br>"
-                + senderName + ".";
+    private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
+    private final MessageSource messageSource;
 
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(user.getEmail());
-        helper.setFrom(email, senderName);
-        helper.setSubject(subject);
-        content = content.replace("[[name]]", user.getLogin());
-        helper.setText(content, true);
-        javaMailSender.send(message);
+    @Value("${spring.mail.username}")
+    private String fromMailUsername;
+
+    @Async
+    @Override
+    public void sendMail(String to, String subject, String template, Map<String, Object> variables, String locale) {
+        MimeMessage message = createMessage(to, subject, template, variables, locale);
+
+        mailSender.send(message);
     }
 
-    public void sendRegistrationConfirmationMail(User user) throws MessagingException, UnsupportedEncodingException {
-        String senderName = "CashManager";
-        String subject = "Please verify your registration";
-        String content = "Dear [[name]],<br>"
-                + "Please check code below to verify your registration:<br>"
-                + "<h3>" + user.getActivationRefreshUUID() + "</h3>"
-                + "Thank you,<br>"
-                + senderName + ".";
+    private MimeMessage createMessage(String to,
+                                      String subject,
+                                      String template,
+                                      Map<String, Object> variables,
+                                      String localeCode) {
+        MimeMessage message = mailSender.createMimeMessage();
 
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(user.getEmail());
-        helper.setFrom(email, senderName);
-        helper.setSubject(subject);
-        content = content.replace("[[name]]", user.getLogin());
-        helper.setText(content, true);
-        javaMailSender.send(message);
+        try {
+            Locale locale = localeCode != null ? Locale.forLanguageTag(localeCode) : Locale.ROOT;
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "UTF-8");
+            Context context = new Context(locale);
 
+            mimeMessageHelper.setSubject(messageSource.getMessage(subject + ".subject", null, locale));
+            mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setFrom(fromMailUsername);
+            context.setVariables(variables);
 
-//            String senderName = "CashManager";
-//    String subject = "Please verify your registration";
-//    String content = "Dear [[name]],<br>"
-//            + "Please click the link below to verify your registration:<br>"
-//            + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
-//            + "Thank you,<br>"
-//            + senderName + ".";
-//
-//    MimeMessage message = javaMailSender.createMimeMessage();
-//    MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//        helper.setTo(user.getEmail());
-//        helper.setFrom(email, senderName);
-//        helper.setSubject(subject);
-//    content = content.replace("[[name]]", user.getLogin());
-//    String verifyURL = "http://localhost:8080" + "/api/v1/auth/activate/?userId=" + user.getId() +
-//            "&activationToken=" + user.getActivationUUID();
-//    content = content.replace("[[URL]]", verifyURL);
+            String text = templateEngine.process(template, context);
+            mimeMessageHelper.setText(text, true);
+        } catch (MessagingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send mail message");
+        }
+
+        return message;
     }
 }

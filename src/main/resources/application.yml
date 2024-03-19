@@ -1,40 +1,55 @@
 spring:
+  application:
+    name: cash-manager-backend
+  profiles:
+    active: default
   datasource:
     url: ${DATABASE_URL}
     password: ${DATABASE_PASSWORD}
     username: ${DATABASE_USERNAME}
   jpa:
-    properties:
-      hibernate:
-        show_sql: true
     open-in-view: false
-  error:
-    include-message: always
-  boot:
-    admin:
-      mail:
-        from: ${EMAIL}
+    hibernate:
+      ddl-auto: validate
   mail:
-    password: ${EMAIL_PASSWORD}
     username: ${EMAIL}
-    port: 465
+    password: ${EMAIL_PASSWORD}
     host: smtp.gmail.com
+    port: 465
     protocol: smtps
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-cashmanager.security.rsa:
-  access-public-key: classpath:certs/access-public-key.pem
-  access-private-key: classpath:certs/access-private-key.pem
-  refresh-public-key: classpath:certs/refresh-public-key.pem
-  refresh-private-key: classpath:certs/refresh-private-key.pem
+  messages:
+    basename: i18n/messages
+    fallback-to-system-locale: false
+
+springdoc:
+  api-docs:
+    path: /api/v1/api-docs
+  swagger-ui:
+    path: /api/v1/swagger-ui
+    disable-swagger-default-url: true
+
+cashmanager:
+  security:
+    jwt:
+      issuer: ${JWT_ISSUER}
+      access-token-minutes-amount: ${JWT_ACCESS_TOKEN_MINUTES_AMOUNT}
+      refresh-token-minutes-amount: ${JWT_REFRESH_TOKEN_MINUTES_AMOUNT}
+    rsa:
+      access-public-key: classpath:certs/access-public-key.pem
+      access-private-key: classpath:certs/access-private-key.pem
+      refresh-public-key: classpath:certs/refresh-public-key.pem
+      refresh-private-key: classpath:certs/refresh-private-key.pem
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+
 logging:
   level:
     org:
       springframework: INFO
-cashmanager:
-  security:
-    jwt:
-      issuer: "self"
-      refresh-token-minutes-amount: 60
-      access-token-minutes-amount: 15

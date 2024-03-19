@@ -14,9 +14,9 @@ import java.util.Set;
 @Entity
 @Table(name = "expense_categories")
 public class ExpenseCategory extends BaseEntity {
-    @Column(name = "title", nullable = false, length = 50)
-    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
     @NotBlank(message = "Title can't be blank")
+    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
+    @Column(name = "title", nullable = false, length = 50)
     private String title;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -24,5 +24,4 @@ public class ExpenseCategory extends BaseEntity {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new LinkedHashSet<>();
-
 }

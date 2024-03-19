@@ -5,8 +5,8 @@ import lombok.Getter;
 
 import java.util.UUID;
 
-@MappedSuperclass
 @Getter
+@MappedSuperclass
 public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
