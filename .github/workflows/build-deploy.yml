@@ -58,9 +58,11 @@ jobs:
           docker tag cash-manager-backend:$IMAGE_VERSION $IMAGE_ID
           docker push $IMAGE_ID
 
-      - name: Copy file into Cloud
+      - name: Copy JAR into Cloud
         uses: appleboy/scp-action@master
         with:
-          source: build/libs/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
-          target: ${{ secrets.CLOUD_URL }}/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          host: ${{ secrets.CLOUD_HOST }}
+          username: ${{ secrets.CLOUD_USERNAME }}
           key: ${{ secrets.CLOUD_KEY }}
+          source: build/libs/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          target: cashmanager-backend/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
