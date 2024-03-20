@@ -8,7 +8,7 @@ env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-  
+
   EMAIL: ${{ secrets.EMAIL }}
   EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
@@ -57,3 +57,10 @@ jobs:
         run: |
           docker tag cash-manager-backend:$IMAGE_VERSION $IMAGE_ID
           docker push $IMAGE_ID
+
+      - name: Copy file into Cloud
+        uses: appleboy/scp-action@master
+        with:
+          source: build/libs/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          target: ${{ secrets.CLOUD_URL }}/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          key: ${{ secrets.CLOUD_KEY }}
