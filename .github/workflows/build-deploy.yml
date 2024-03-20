@@ -80,6 +80,6 @@ jobs:
           key: ${{ secrets.CLOUD_KEY }}
           script: |
             cd cash-manager-backend
-            chmod 400 cloud-run.sh
+            chmod +x cloud-run.sh
             ./cloud-run.sh
           envs: IMAGE_VERSION
