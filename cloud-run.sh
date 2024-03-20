@@ -4,4 +4,4 @@ set -o allexport
 source ../.env
 set +o allexport
 
-pm2 start java --name "cash-manager-backend" --interpreter none --watch false -- cash-manager-backend-${IMAGE_VERSION}.jar
+pm2 start pm2-run.sh
