@@ -67,7 +67,7 @@ jobs:
           host: ${{ secrets.CLOUD_HOST }}
           username: ${{ secrets.CLOUD_USERNAME }}
           key: ${{ secrets.CLOUD_KEY }}
-          source: cash-manager-backend-${{ env.IMAGE_VERSION }}.jar, cloud-run.sh
+          source: cash-manager-backend-${{ env.IMAGE_VERSION }}.jar, cloud-run.sh, pm2-run.sh
           target: cash-manager-backend
 
       - name: Run script on Cloud
