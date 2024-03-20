@@ -67,5 +67,19 @@ jobs:
           host: ${{ secrets.CLOUD_HOST }}
           username: ${{ secrets.CLOUD_USERNAME }}
           key: ${{ secrets.CLOUD_KEY }}
-          source: cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          source: cash-manager-backend-${{ env.IMAGE_VERSION }}.jar, cloud-run.sh
           target: cash-manager-backend
+
+      - name: Run script on Cloud
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_VERSION: ${{ env.IMAGE_VERSION }}
+        with:
+          host: ${{ secrets.CLOUD_HOST }}
+          username: ${{ secrets.CLOUD_USERNAME }}
+          key: ${{ secrets.CLOUD_KEY }}
+          script: |
+            cd cash-manager-backend
+            chmod 400 cloud-run.sh
+            ./cloud-run.sh
+          envs: IMAGE_VERSION

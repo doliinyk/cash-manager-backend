@@ -38,10 +38,10 @@ cashmanager:
       access-token-minutes-amount: ${JWT_ACCESS_TOKEN_MINUTES_AMOUNT}
       refresh-token-minutes-amount: ${JWT_REFRESH_TOKEN_MINUTES_AMOUNT}
     rsa:
-      access-public-key: classpath:certs/access-public-key.pem
-      access-private-key: classpath:certs/access-private-key.pem
-      refresh-public-key: classpath:certs/refresh-public-key.pem
-      refresh-private-key: classpath:certs/refresh-private-key.pem
+      access-public-key: ${ACCESS_PUBLIC_KEY}
+      access-private-key: ${ACCESS_PRIVATE_KEY}
+      refresh-public-key: ${REFRESH_PUBLIC_KEY}
+      refresh-private-key: ${REFRESH_PRIVATE_KEY}
 
 server:
   error:
