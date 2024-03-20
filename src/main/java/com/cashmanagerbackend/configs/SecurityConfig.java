@@ -25,7 +25,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/error/**", "/api/v1/auth/**", "/api/v1/api-docs/**", "/api/v1/swagger-ui/**").permitAll();
+                    auth.requestMatchers("/error/**", "/api/v1/auth/**", "/api/v1/api-docs/**", "/api/v1/swagger-ui/**")
+                            .permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -35,7 +36,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
