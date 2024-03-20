@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
   workflow_dispatch:
   push:
-    branches: [develop]
+    branches: [ develop ]
 
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -65,4 +65,4 @@ jobs:
           username: ${{ secrets.CLOUD_USERNAME }}
           key: ${{ secrets.CLOUD_KEY }}
           source: build/libs/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
-          target: cashmanager-backend/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
+          target: ${{ secrets.CLOUD_USERNAME }}${{ secrets.CLOUD_HOST }}:cashmanager-backend/cash-manager-backend-${{ env.IMAGE_VERSION }}.jar
