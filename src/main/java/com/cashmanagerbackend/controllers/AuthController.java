@@ -37,7 +37,7 @@ public class AuthController {
                          HttpServletRequest request) {
         Map<String, Object> variables = createObjectVariables(redirectUrl, request);
 
-        return authService.registerUser(userRegisterDto, locale.toLowerCase(), variables);
+        return authService.registerUser(userRegisterDto, locale, variables);
     }
 
     @PostMapping("/activate")
