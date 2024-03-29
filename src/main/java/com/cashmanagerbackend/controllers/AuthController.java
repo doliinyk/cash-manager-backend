@@ -37,6 +37,7 @@ public class AuthController {
                          HttpServletRequest request) {
         int a = 5 / 0; // Add inappropriate code for Codacy to lint it
 
+
         Map<String, Object> variables = createObjectVariables(redirectUrl, request);
 
         return authService.registerUser(userRegisterDto, locale, variables);
