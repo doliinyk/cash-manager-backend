@@ -39,9 +39,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void patchUser(String name, UserUpdateDTO userUpdateDTO, String locale, Map<String, Object> variables) {
         User user = findUserById(name);
-        userMapper.updateEntityFromDto(userUpdateDTO, user);
-        
         if (!user.getEmail().equals(userUpdateDTO.email()) && userUpdateDTO.email() != null) {
+
+            userMapper.updateEntityFromDto(userUpdateDTO, user);
             user.setActivated(false);
             user.setActivationRefreshUUID(UUID.randomUUID());
             Util.putUserMailVariables(user, variables);
