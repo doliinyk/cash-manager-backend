@@ -9,7 +9,7 @@ import java.util.Map;
 public class Util {
     private static final String REDIRECT_URL = "redirectUrl";
 
-    private Util() {//SonarLint
+    private Util() {
     }
 
     public static Map<String, Object> createObjectVariables(String redirectUrl, HttpServletRequest request) {

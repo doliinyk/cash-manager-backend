@@ -73,10 +73,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void activateUser(UUID userId, String activationToken) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User with this id don't exist")
-                );
+        User user = findUserById(String.valueOf(userId));
 
         if (user.getActivationRefreshUUID().equals(UUID.fromString(activationToken))) {
             user.setActivated(true);
@@ -90,7 +87,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
         User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
@@ -111,9 +108,8 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AccessRefreshTokenDTO refreshUserTokens(JWTTokenDTO jwtTokenDTO) {
         Jwt refreshTokenJwt = jwtRefreshDecoder.decode(jwtTokenDTO.token());
-        User user = userRepository.findById(UUID.fromString(refreshTokenJwt.getSubject())).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this ID doesn't exist")
-        );
+        User user = findUserById(refreshTokenJwt.getSubject());
+
         if (user.getDeleteDate() != null){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted");
         }
@@ -140,8 +136,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
-        User user = userRepository.findById(resetPasswordDTO.id()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this id doesn't exist"));
+        User user = findUserById(String.valueOf(resetPasswordDTO.id()));
 
         if (user.getActivationRefreshUUID().equals(resetPasswordDTO.securityCode())) {
             user.setPassword(passwordEncoder.encode(resetPasswordDTO.password()));
@@ -178,6 +173,10 @@ public class AuthServiceImpl implements AuthService {
 
         return new AccessRefreshTokenDTO(accessJwt, refreshJwt);
     }
-
+    private User findUserById(String id) {
+        return userRepository.findById(UUID.fromString(id)).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
+        );
+    }
 
 }

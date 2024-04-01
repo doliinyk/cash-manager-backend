@@ -38,17 +38,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void patchUser(String name, UserUpdateDTO userUpdateDTO, String locale, Map<String, Object> variables) {
+    public User patchUser(String name, UserUpdateDTO userUpdateDTO, String locale, Map<String, Object> variables) {
         User user = findUserById(name);
-        if (!user.getEmail().equals(userUpdateDTO.email()) && userUpdateDTO.email() != null) {
+        String email = user.getEmail();
 
-            userMapper.updateEntityFromDto(userUpdateDTO, user);
+        userMapper.updateEntityFromDto(userUpdateDTO, user);
+
+        if (!email.equals(userUpdateDTO.email()) && userUpdateDTO.email() != null) {
             user.setActivated(false);
             user.setActivationRefreshUUID(UUID.randomUUID());
             Util.putUserMailVariables(user, variables);
             emailService.sendMail(user.getEmail(), "registration", "registration-mail",
                     variables, locale);
+        }else {
+            user.setEmail(email);
         }
+
+        return user;
     }
 
     @Override
@@ -81,7 +87,6 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
         }
     }
-
 
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id)).orElseThrow(
