@@ -1,7 +1,7 @@
 package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.EmailDTO;
-import com.cashmanagerbackend.dtos.requests.RefreshTokenDTO;
+import com.cashmanagerbackend.dtos.requests.JWTTokenDTO;
 import com.cashmanagerbackend.dtos.requests.ResetPasswordDTO;
 import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
@@ -10,8 +10,8 @@ import com.cashmanagerbackend.mappers.UserMapper;
 import com.cashmanagerbackend.repositories.UserRepository;
 import com.cashmanagerbackend.services.AuthService;
 import com.cashmanagerbackend.services.EmailService;
+import com.cashmanagerbackend.utils.Util;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
         user.setActivationRefreshUUID(UUID.randomUUID());
         user.setPassword(passwordEncoder.encode(userRegisterDTO.password()));
         user = userRepository.save(user);
-        putUserMailVariables(user, variables);
+        Util.putUserMailVariables(user, variables);
 
         emailService.sendMail(user.getEmail(), "registration", "registration-mail", variables, locale);
 
@@ -95,14 +95,13 @@ public class AuthServiceImpl implements AuthService {
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
-        putUserMailVariables(user, variables);
+        Util.putUserMailVariables(user, variables);
 
         emailService.sendMail(user.getEmail(), "registration", "registration-mail", variables, locale);
     }
 
     @Override
     @Transactional
-    @SneakyThrows
     public AccessRefreshTokenDTO loginUser(User user) {
         user = userRepository.save(user);
 
@@ -111,13 +110,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AccessRefreshTokenDTO refreshUserTokens(RefreshTokenDTO refreshTokenDTO) {
-        Jwt refreshTokenJwt = jwtRefreshDecoder.decode(refreshTokenDTO.refreshToken());
+    public AccessRefreshTokenDTO refreshUserTokens(JWTTokenDTO jwtTokenDTO) {
+        Jwt refreshTokenJwt = jwtRefreshDecoder.decode(jwtTokenDTO.token());
         User user = userRepository.findById(UUID.fromString(refreshTokenJwt.getSubject())).orElseThrow(
                 () -> new ResponseStatusException(HttpStatusCode.valueOf(400), "User with this ID doesn't exist")
         );
 
-        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(refreshTokenDTO.refreshToken())) {
+        if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
             throw new JwtException("Provided JWT refresh token doesn't belong to its user");
         }
 
@@ -132,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
-        putUserMailVariables(user, variables);
+        Util.putUserMailVariables(user, variables);
 
         emailService.sendMail(user.getEmail(), "forgot", "forgot-mail", variables, locale);
     }
@@ -168,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
         JwtClaimsSet refreshClaims = JwtClaimsSet.builder()
                 .issuer(issuer)
                 .issuedAt(now)
-                .expiresAt(now.plus(refreshTokenLifetime, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(refreshTokenLifetime, ChronoUnit.DAYS))
                 .subject(String.valueOf(user.getId()))
                 .claim("scope", scope)
                 .build();
@@ -179,9 +178,5 @@ public class AuthServiceImpl implements AuthService {
         return new AccessRefreshTokenDTO(accessJwt, refreshJwt);
     }
 
-    private void putUserMailVariables(User user, Map<String, Object> variables) {
-        variables.put("login", user.getLogin());
-        variables.put("redirectUrl",
-                      variables.get("redirectUrl") + "?userId=" + user.getId() + "&activationToken=" + user.getActivationRefreshUUID());
-    }
+
 }

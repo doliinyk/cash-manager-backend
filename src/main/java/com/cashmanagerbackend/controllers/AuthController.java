@@ -1,12 +1,13 @@
 package com.cashmanagerbackend.controllers;
 
 import com.cashmanagerbackend.dtos.requests.EmailDTO;
-import com.cashmanagerbackend.dtos.requests.RefreshTokenDTO;
+import com.cashmanagerbackend.dtos.requests.JWTTokenDTO;
 import com.cashmanagerbackend.dtos.requests.ResetPasswordDTO;
 import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.services.AuthService;
+import com.cashmanagerbackend.utils.Util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class AuthController {
                          @RequestParam(required = false) String locale,
                          @RequestParam(required = false) String redirectUrl,
                          HttpServletRequest request) {
-        Map<String, Object> variables = createObjectVariables(redirectUrl, request);
+        Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
         return authService.registerUser(userRegisterDto, locale, variables);
     }
@@ -51,7 +51,7 @@ public class AuthController {
                                     @RequestParam(required = false) String locale,
                                     @RequestParam(required = false) String redirectUrl,
                                     HttpServletRequest request) {
-        Map<String, Object> variables = createObjectVariables(redirectUrl, request);
+        Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
         authService.sendActivationEmail(emailDTO, locale, variables);
     }
@@ -68,8 +68,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public AccessRefreshTokenDTO refresh(@RequestBody @Valid RefreshTokenDTO refreshTokenDTO) {
-        return authService.refreshUserTokens(refreshTokenDTO);
+    public AccessRefreshTokenDTO refresh(@RequestBody @Valid JWTTokenDTO jwtTokenDTO) {
+        return authService.refreshUserTokens(jwtTokenDTO);
     }
 
     @PostMapping("/forgot")
@@ -77,7 +77,7 @@ public class AuthController {
                                @RequestParam(required = false) String locale,
                                @RequestParam(required = false) String redirectUrl,
                                HttpServletRequest request) {
-        Map<String, Object> variables = createObjectVariables(redirectUrl, request);
+        Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
         authService.forgotPassword(emailDTO, locale, variables);
     }
@@ -87,21 +87,5 @@ public class AuthController {
         authService.resetPassword(resetPasswordDTO);
     }
 
-    private Map<String, Object> createObjectVariables(String redirectUrl, HttpServletRequest request) {
-        Map<String, Object> variables = new HashMap<>();
-        boolean isFrontendRequest = false;
 
-        if (redirectUrl == null) {
-            redirectUrl = request.getRequestURL()
-                    .toString()
-                    .replace("register", "activate");
-        } else {
-            isFrontendRequest = true;
-        }
-
-        variables.put("redirectUrl", redirectUrl);
-        variables.put("isFrontendRequest", isFrontendRequest);
-
-        return variables;
-    }
 }
