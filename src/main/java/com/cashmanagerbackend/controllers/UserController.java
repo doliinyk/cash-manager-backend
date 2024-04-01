@@ -1,5 +1,6 @@
 package com.cashmanagerbackend.controllers;
 
+import com.cashmanagerbackend.dtos.requests.RestoreUserDTO;
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
 import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
@@ -40,5 +41,10 @@ public class UserController {
     @PatchMapping("/password")
     public void patchUserPassword(Principal principal, @RequestBody UserPasswordUpdateDTO userPasswordUpdateDTO) {
         userService.patchUserPassword(principal.getName(), userPasswordUpdateDTO);
+    }
+
+    @PatchMapping("/restore-user")
+    public void restoreUser(@RequestBody RestoreUserDTO restoreUserDTO){
+        userService.restoreUser(restoreUserDTO);
     }
 }

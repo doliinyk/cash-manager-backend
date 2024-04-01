@@ -1,5 +1,6 @@
 package com.cashmanagerbackend.services;
 
+import com.cashmanagerbackend.dtos.requests.RestoreUserDTO;
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
 import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
@@ -16,4 +17,6 @@ public interface UserService extends UserDetailsService {
     void deleteUser(String id);
 
     void patchUserPassword(String id, UserPasswordUpdateDTO userPasswordUpdateDTO) throws ResponseStatusException;
+
+    void restoreUser(RestoreUserDTO restoreUserDTO);
 }

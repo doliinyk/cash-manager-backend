@@ -1,5 +1,6 @@
 package com.cashmanagerbackend.services.impl;
 
+import com.cashmanagerbackend.dtos.requests.RestoreUserDTO;
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
 import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
@@ -65,6 +66,19 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.newPassword()));
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong old password");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void restoreUser(RestoreUserDTO restoreUserDTO) {
+        User user = userRepository.findByLoginAndEmail(restoreUserDTO.login(), restoreUserDTO.email()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this login and email not found")
+        );
+        if (passwordEncoder.matches(restoreUserDTO.password(), user.getPassword())){
+            user.setDeleteDate(null);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
         }
     }
 

@@ -114,7 +114,9 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(UUID.fromString(refreshTokenJwt.getSubject())).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this ID doesn't exist")
         );
-
+        if (user.getDeleteDate() != null){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted");
+        }
         if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
             throw new JwtException("Provided JWT refresh token doesn't belong to its user");
         }
