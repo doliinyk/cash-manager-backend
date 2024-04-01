@@ -2,7 +2,7 @@ package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
-import com.cashmanagerbackend.dtos.responses.GetUserResponseDTO;
+import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.mappers.UserMapper;
 import com.cashmanagerbackend.repositories.UserRepository;
@@ -10,9 +10,8 @@ import com.cashmanagerbackend.services.EmailService;
 import com.cashmanagerbackend.services.UserService;
 import com.cashmanagerbackend.utils.Util;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public GetUserResponseDTO getUser(String id) {
+    public UserResponseDTO getUser(String id) {
         return userMapper.entityToDTO(findUserById(id));
     }
 
@@ -61,26 +60,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void patchUserPassword(String name, UserPasswordUpdateDTO userPasswordUpdateDTO) throws ResponseStatusException {
+    public void patchUserPassword(String name, UserPasswordUpdateDTO userPasswordUpdateDTO) {
         User user = findUserById(name);
 
         if (passwordEncoder.matches(userPasswordUpdateDTO.oldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.newPassword()));
         } else {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Wrong old password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong old password");
         }
     }
 
 
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResponseStatusException(HttpStatusCode.valueOf(400), "User with this ID doesn't exist")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
         );
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         return userRepository.findByLoginOrEmail(username, username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found by username: " + username));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found by username: " + username));
     }
 }

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.*;
@@ -91,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
         User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(400),
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
@@ -113,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
     public AccessRefreshTokenDTO refreshUserTokens(JWTTokenDTO jwtTokenDTO) {
         Jwt refreshTokenJwt = jwtRefreshDecoder.decode(jwtTokenDTO.token());
         User user = userRepository.findById(UUID.fromString(refreshTokenJwt.getSubject())).orElseThrow(
-                () -> new ResponseStatusException(HttpStatusCode.valueOf(400), "User with this ID doesn't exist")
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this ID doesn't exist")
         );
 
         if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
@@ -127,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
         User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(400),
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
@@ -140,13 +139,13 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
         User user = userRepository.findById(resetPasswordDTO.id()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatusCode.valueOf(400), "User with this id doesn't exist"));
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this id doesn't exist"));
 
         if (user.getActivationRefreshUUID().equals(resetPasswordDTO.securityCode())) {
             user.setPassword(passwordEncoder.encode(resetPasswordDTO.password()));
             user.setActivationRefreshUUID(null);
         } else {
-            throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Wrong security code");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong security code");
         }
     }
 

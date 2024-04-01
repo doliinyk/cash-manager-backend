@@ -9,6 +9,9 @@ import java.util.Map;
 public class Util {
     private static final String REDIRECT_URL = "redirectUrl";
 
+    private Util() {//SonarLint
+    }
+
     public static Map<String, Object> createObjectVariables(String redirectUrl, HttpServletRequest request) {
         Map<String, Object> variables = new HashMap<>();
         boolean isFrontendRequest = false;
@@ -27,6 +30,7 @@ public class Util {
 
         return variables;
     }
+
     public static void putUserMailVariables(User user, Map<String, Object> variables) {
         variables.put("login", user.getLogin());
         variables.put(REDIRECT_URL,

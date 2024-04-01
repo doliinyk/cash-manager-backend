@@ -2,7 +2,7 @@ package com.cashmanagerbackend.controllers;
 
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
-import com.cashmanagerbackend.dtos.responses.GetUserResponseDTO;
+import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
 import com.cashmanagerbackend.services.UserService;
 import com.cashmanagerbackend.utils.Util;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public GetUserResponseDTO getUser(Principal principal){
+    public UserResponseDTO getUser(Principal principal){
         return userService.getUser(principal.getName());
     }
 
