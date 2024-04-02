@@ -1,6 +1,5 @@
 package com.cashmanagerbackend.controllers;
 
-import com.cashmanagerbackend.dtos.requests.RestoreUserDTO;
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
 import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;

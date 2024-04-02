@@ -111,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
         User user = findUserById(refreshTokenJwt.getSubject());
 
         if (!user.isEnabled()){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted or not activated");
         }
         if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
             throw new JwtException("Provided JWT refresh token doesn't belong to its user");
