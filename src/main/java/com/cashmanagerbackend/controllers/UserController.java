@@ -2,6 +2,7 @@ package com.cashmanagerbackend.controllers;
 
 import com.cashmanagerbackend.dtos.requests.RestoreUserDTO;
 import com.cashmanagerbackend.dtos.requests.UserPasswordUpdateDTO;
+import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.requests.UserUpdateDTO;
 import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
 import com.cashmanagerbackend.services.UserService;
@@ -25,12 +26,12 @@ public class UserController {
     }
 
     @PatchMapping
-    public void patchUser(Principal principal, @RequestBody UserUpdateDTO userUpdateDTO,
+    public UserResponseDTO patchUser(Principal principal, @RequestBody UserUpdateDTO userUpdateDTO,
                           @RequestParam(required = false) String locale,
                           @RequestParam(required = false) String redirectUrl,
                           HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
-        userService.patchUser(principal.getName(), userUpdateDTO, locale, variables);
+        return userService.patchUser(principal.getName(), userUpdateDTO, locale, variables);
     }
 
     @DeleteMapping
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/restore-user")
-    public void restoreUser(@RequestBody RestoreUserDTO restoreUserDTO){
-        userService.restoreUser(restoreUserDTO);
+    public void restoreUser(@RequestBody UserRegisterDTO userRegisterDTO){
+        userService.restoreUser(userRegisterDTO);
     }
 }

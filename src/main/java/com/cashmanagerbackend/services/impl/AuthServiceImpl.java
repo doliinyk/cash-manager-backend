@@ -110,7 +110,7 @@ public class AuthServiceImpl implements AuthService {
         Jwt refreshTokenJwt = jwtRefreshDecoder.decode(jwtTokenDTO.token());
         User user = findUserById(refreshTokenJwt.getSubject());
 
-        if (user.getDeleteDate() != null){
+        if (!user.isEnabled()){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted");
         }
         if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
@@ -124,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
         User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                                                "User with this email doesn't exist"));
 
         user.setActivationRefreshUUID(UUID.randomUUID());
@@ -142,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword(passwordEncoder.encode(resetPasswordDTO.password()));
             user.setActivationRefreshUUID(null);
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong security code");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong security code");
         }
     }
 
@@ -178,5 +178,4 @@ public class AuthServiceImpl implements AuthService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
         );
     }
-
 }
