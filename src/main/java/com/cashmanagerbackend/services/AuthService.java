@@ -1,7 +1,7 @@
 package com.cashmanagerbackend.services;
 
 import com.cashmanagerbackend.dtos.requests.EmailDTO;
-import com.cashmanagerbackend.dtos.requests.RefreshTokenDTO;
+import com.cashmanagerbackend.dtos.requests.JWTTokenDTO;
 import com.cashmanagerbackend.dtos.requests.ResetPasswordDTO;
 import com.cashmanagerbackend.dtos.requests.UserRegisterDTO;
 import com.cashmanagerbackend.dtos.responses.AccessRefreshTokenDTO;
@@ -19,7 +19,7 @@ public interface AuthService {
 
     AccessRefreshTokenDTO loginUser(User user);
 
-    AccessRefreshTokenDTO refreshUserTokens(RefreshTokenDTO refreshTokenDTO);
+    AccessRefreshTokenDTO refreshUserTokens(JWTTokenDTO jwtTokenDTO);
 
     void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables);
 
