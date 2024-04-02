@@ -173,6 +173,7 @@ public class AuthServiceImpl implements AuthService {
 
         return new AccessRefreshTokenDTO(accessJwt, refreshJwt);
     }
+
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id)).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
