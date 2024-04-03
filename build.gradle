@@ -68,5 +68,19 @@ tasks.named('jacocoTestReport') {
         xml.required = true
         html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
+
     dependsOn test
+}
+
+afterEvaluate {
+    tasks.named('jacocoTestReport') {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "com/cashmanagerbackend/configs",
+                    "com/cashmanagerbackend/dtos",
+                    "com/cashmanagerbackend/entities",
+                    "com/cashmanagerbackend/mappers"
+            ])
+        }))
+    }
 }

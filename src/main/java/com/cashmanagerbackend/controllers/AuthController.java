@@ -31,13 +31,13 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UUID register(@RequestBody @Valid UserRegisterDTO userRegisterDto,
+    public UUID register(@RequestBody @Valid UserRegisterDTO userRegisterDTO,
                          @RequestParam(required = false) String locale,
                          @RequestParam(required = false) String redirectUrl,
                          HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
-        return authService.registerUser(userRegisterDto, locale, variables);
+        return authService.registerUser(userRegisterDTO, locale, variables);
     }
 
     @PostMapping("/activate")
