@@ -86,6 +86,4 @@ public class AuthController {
     public void resetPassword(@RequestBody @Valid ResetPasswordDTO resetPasswordDTO) {
         authService.resetPassword(resetPasswordDTO);
     }
-
-
 }
