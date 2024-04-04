@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,6 +23,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.cashmanagerbackend.utils.TestConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,7 +45,7 @@ class AuthControllerTest {
     @DisplayName("Should return UUID of created user and created status code when register user")
     void testRegister() throws Exception {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("login", "12345678", "email@email.com");
-        String locale = "en_US";
+        String locale = "en";
         String redirectUrl = "http://example.com/register";
 
         UUID uuid = UUID.randomUUID();
@@ -84,7 +87,7 @@ class AuthControllerTest {
     @DisplayName("Should return ok status code when send activation email")
     void testSendActivationEmail() throws Exception {
         EmailDTO emailDTO = new EmailDTO("email@email.com");
-        String locale = "en_US";
+        String locale = "en";
         String redirectUrl = "http://example.com/register";
 
         Map<String, Object> variables = new HashMap<>();
@@ -110,9 +113,9 @@ class AuthControllerTest {
                                 .principal(principal))
                 .andExpect(status().isForbidden())
                 .andExpect(result -> {
-                    if (!(result.getResolvedException() instanceof ResponseStatusException)) {
-                        throw new AssertionError("Expected ResponseStatusException");
-                    }
+                    assertInstanceOf(ResponseStatusException.class, result.getResolvedException());
+                    assertEquals(HttpStatus.FORBIDDEN,
+                                 ((ResponseStatusException) result.getResolvedException()).getStatusCode());
                 });
 
         verify(authService, never()).loginUser(any());

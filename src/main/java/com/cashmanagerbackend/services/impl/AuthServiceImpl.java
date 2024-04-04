@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${cashmanager.security.jwt.access-token-minutes-amount}")
     private int accessTokenLifetime;
 
-    @Value("${cashmanager.security.jwt.refresh-token-minutes-amount}")
+    @Value("${cashmanager.security.jwt.refresh-token-days-amount}")
     private int refreshTokenLifetime;
 
     private final UserRepository userRepository;
@@ -171,9 +171,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private User findUserById(String id) {
-        return userRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
-        );
+        return userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                               "User with this ID doesn't exist"));
     }
 
     private User findUserByEmail(EmailDTO emailDTO) {
