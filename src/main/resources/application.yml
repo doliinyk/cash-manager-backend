@@ -5,8 +5,8 @@ spring:
     active: default
   datasource:
     url: ${DATABASE_URL}
-    password: ${DATABASE_PASSWORD}
     username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
   jpa:
     open-in-view: false
     hibernate:
