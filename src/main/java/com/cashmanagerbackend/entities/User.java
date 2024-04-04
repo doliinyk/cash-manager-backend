@@ -23,7 +23,7 @@ import java.util.*;
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements UserDetails {
     @NotBlank(message = "Login is missing")
-    @Pattern(regexp = "^[a-z0-9_-]{1,30}$", message = "Login not valid (please use only a-z0-9_-)")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])\\w{3,30}$", message = "Login not valid (please use only a-z0-9_-)")
     @Size(min = 3, max = 30, message = "Login must be between 3 and 30")
     @Column(name = "login", nullable = false, length = 30)
     private String login;
