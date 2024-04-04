@@ -54,8 +54,7 @@ public class UserServiceImpl implements UserService {
             user.setActivated(false);
             user.setActivationRefreshUUID(UUID.randomUUID());
             Util.putUserMailVariables(user, variables);
-            emailService.sendMail(user.getEmail(), "registration", "registration-mail",
-                                  variables, locale);
+            emailService.sendMail(user.getEmail(), "registration", "registration-mail", variables, locale);
         }
 
         return userMapper.entityToDTO(user);
