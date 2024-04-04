@@ -33,23 +33,29 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponseDTO getUser(String id) {
-        return userMapper.entityToDTO(findUserById(id));
+        User user = findUserById(id);
+
+        return userMapper.entityToDTO(user);
     }
 
     @Override
     @Transactional
-    public UserResponseDTO patchUser(String name, UserUpdateDTO userUpdateDTO, String locale, Map<String, Object> variables) {
-        User user = findUserById(name);
-        String email = user.getEmail();
+    public UserResponseDTO patchUser(String id,
+                                     UserUpdateDTO userUpdateDTO,
+                                     String locale,
+                                     Map<String, Object> variables) {
+        User user = findUserById(id);
+        verifyDtoLoginEmailExists(userUpdateDTO, user);
 
+        String email = user.getEmail();
         userMapper.updateEntityFromDto(userUpdateDTO, user);
 
-        if (!email.equals(userUpdateDTO.email()) && userUpdateDTO.email() != null) {
+        if (userUpdateDTO.email() != null && !email.equals(userUpdateDTO.email())) {
             user.setActivated(false);
             user.setActivationRefreshUUID(UUID.randomUUID());
             Util.putUserMailVariables(user, variables);
             emailService.sendMail(user.getEmail(), "registration", "registration-mail",
-                    variables, locale);
+                                  variables, locale);
         }
 
         return userMapper.entityToDTO(user);
@@ -57,14 +63,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(String name) {
-        findUserById(name).setDeleteDate(Instant.now());
+    public void deleteUser(String id) {
+        User user = findUserById(id);
+
+        user.setDeleteDate(Instant.now());
     }
 
     @Override
     @Transactional
-    public void patchUserPassword(String name, UserPasswordUpdateDTO userPasswordUpdateDTO) {
-        User user = findUserById(name);
+    public void patchUserPassword(String id, UserPasswordUpdateDTO userPasswordUpdateDTO) {
+        User user = findUserById(id);
 
         if (passwordEncoder.matches(userPasswordUpdateDTO.oldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.newPassword()));
@@ -79,11 +87,20 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLoginAndEmail(userRegisterDTO.login(), userRegisterDTO.email()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this login and email not found")
         );
-        if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())){
+
+        if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
             user.setDeleteDate(null);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(String username) {
+        return userRepository.findByLoginOrEmail(username, username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                               "User not found by username: " + username));
     }
 
     private User findUserById(String id) {
@@ -92,10 +109,15 @@ public class UserServiceImpl implements UserService {
         );
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String username) {
-        return userRepository.findByLoginOrEmail(username, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found by username: " + username));
+    private void verifyDtoLoginEmailExists(UserUpdateDTO userUpdateDTO, User user) {
+        if (userUpdateDTO.login() != null
+                && !user.getLogin().equals(userUpdateDTO.login())
+                && userRepository.existsByLogin(userUpdateDTO.login())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this login already exists");
+        } else if (user.getEmail() != null
+                && !user.getEmail().equals(userUpdateDTO.email())
+                && userRepository.existsByEmail(userUpdateDTO.email())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists");
+        }
     }
 }

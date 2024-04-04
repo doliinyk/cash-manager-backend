@@ -62,7 +62,7 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("\"" + uuid + "\""));
 
-        verify(authService).registerUser(userRegisterDTO, locale, variables);
+        verify(authService, times(1)).registerUser(userRegisterDTO, locale, variables);
     }
 
     @Test
@@ -77,7 +77,7 @@ class AuthControllerTest {
                                 .param("activationToken", activationToken))
                 .andExpect(status().isOk());
 
-        verify(authService).activateUser(uuid, activationToken);
+        verify(authService, times(1)).activateUser(uuid, activationToken);
     }
 
     @Test
@@ -98,7 +98,7 @@ class AuthControllerTest {
                                 .content(objectMapper.writeValueAsString(emailDTO)))
                 .andExpect(status().isOk());
 
-        verify(authService).sendActivationEmail(emailDTO, locale, variables);
+        verify(authService, times(1)).sendActivationEmail(emailDTO, locale, variables);
     }
 
     @Test
@@ -134,6 +134,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.accessToken").value(tokenDTO.accessToken()))
                 .andExpect(jsonPath("$.refreshToken").value(tokenDTO.refreshToken()));
 
-        verify(authService).loginUser(user);
+        verify(authService, times(1)).loginUser(user);
     }
 }
