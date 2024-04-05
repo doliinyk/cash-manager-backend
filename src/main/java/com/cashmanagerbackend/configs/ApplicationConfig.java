@@ -9,8 +9,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
 @EnableAsync
-@EnableJpaAuditing
 @EnableCaching
+@EnableJpaAuditing
 @EnableConfigurationProperties(RsaKeyProperties.class)
 public class ApplicationConfig {
 }
