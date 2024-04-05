@@ -20,11 +20,11 @@ public class RegularExpense extends BaseEntity {
     private long periodicity;
 
     @NotBlank(message = "Title can't be blank")
-    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
+    @Size(min = 2, max = 50, message = "Title must be between 2 and 50 characters long")
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
-    @Size(max = 500, message = "Description length can't be more than 500")
+    @Size(max = 500, message = "Description length can't be more than 500 characters long")
     @Column(name = "description", length = 500)
     private String description;
 

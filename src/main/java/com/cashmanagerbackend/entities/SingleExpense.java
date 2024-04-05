@@ -19,7 +19,7 @@ public class SingleExpense extends BaseEntity {
     private ExpenseCategory category;
 
     @Column(name = "description", length = 500)
-    @Size(max = 500, message = "Description length can't be more than 500")
+    @Size(max = 500, message = "Description length can't be more than 500 characters long")
     private String description;
 
     @Column(name = "cost", nullable = false)

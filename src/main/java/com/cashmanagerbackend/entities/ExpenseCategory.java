@@ -15,7 +15,7 @@ import java.util.Set;
 @Table(name = "expense_categories")
 public class ExpenseCategory extends BaseEntity {
     @NotBlank(message = "Title can't be blank")
-    @Size(min = 2, max = 50, message = "Title must be between 2 and 50")
+    @Size(min = 2, max = 50, message = "Title must be between 2 and 50 characters long")
     @Column(name = "title", nullable = false, length = 50)
     private String title;
 
