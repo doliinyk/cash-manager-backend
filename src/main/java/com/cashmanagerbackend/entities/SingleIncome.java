@@ -20,7 +20,7 @@ public class SingleIncome extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private IncomeCategory category;
 
-    @Size(max = 500, message = "Description length can't be more than 500")
+    @Size(max = 500, message = "Description length can't be more than 500 characters long")
     @Column(name = "description", length = 500)
     private String description;
 

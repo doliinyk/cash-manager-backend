@@ -19,7 +19,7 @@ cashmanager:
     jwt:
       issuer: test
       access-token-minutes-amount: 15
-      refresh-token-minutes-amount: 120
+      refresh-token-days-amount: 120
     rsa:
       access-public-key: classpath:certs/access-public-key.test.pem
       access-private-key: classpath:certs/access-private-key.test.pem

@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
   workflow_dispatch:
   push:
-    branches: [ develop ]
+    branches: [develop]
 
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}

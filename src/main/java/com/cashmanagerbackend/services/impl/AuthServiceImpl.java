@@ -37,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${cashmanager.security.jwt.access-token-minutes-amount}")
     private int accessTokenLifetime;
 
-    @Value("${cashmanager.security.jwt.refresh-token-minutes-amount}")
+    @Value("${cashmanager.security.jwt.refresh-token-days-amount}")
     private int refreshTokenLifetime;
 
     private final UserRepository userRepository;
@@ -53,9 +53,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UUID registerUser(UserRegisterDTO userRegisterDTO, String locale, Map<String, Object> variables) {
         if (userRepository.existsByLogin(userRegisterDTO.login())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this login already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this login already exists");
         } else if (userRepository.existsByEmail(userRegisterDTO.email())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists");
         }
 
         User user = userMapper.dtoToEntity(userRegisterDTO);
@@ -86,9 +86,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
-        User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                               "User with this email doesn't exist"));
+        User user = findUserByEmail(emailDTO);
 
         user.setActivationRefreshUUID(UUID.randomUUID());
         Util.putUserMailVariables(user, variables);
@@ -110,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
         Jwt refreshTokenJwt = jwtRefreshDecoder.decode(jwtTokenDTO.token());
         User user = findUserById(refreshTokenJwt.getSubject());
 
-        if (!user.isEnabled()){
+        if (!user.isEnabled()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User deleted or not activated");
         }
         if (user.getRefreshToken() == null || !user.getRefreshToken().equals(jwtTokenDTO.token())) {
@@ -123,9 +121,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
-        User user = userRepository.findByEmail(emailDTO.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                               "User with this email doesn't exist"));
+        User user = findUserByEmail(emailDTO);
 
         user.setActivationRefreshUUID(UUID.randomUUID());
         Util.putUserMailVariables(user, variables);
@@ -175,8 +171,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private User findUserById(String id) {
-        return userRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this ID doesn't exist")
-        );
+        return userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                               "User with this ID doesn't exist"));
+    }
+
+    private User findUserByEmail(EmailDTO emailDTO) {
+        return userRepository.findByEmail(emailDTO.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                                               "User with this email doesn't exist"));
     }
 }
