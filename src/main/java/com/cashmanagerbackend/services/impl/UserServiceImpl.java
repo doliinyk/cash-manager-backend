@@ -11,6 +11,8 @@ import com.cashmanagerbackend.services.EmailService;
 import com.cashmanagerbackend.services.UserService;
 import com.cashmanagerbackend.utils.Util;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Cacheable(cacheNames = "{userInfo}", key = "#id")
     @Transactional(readOnly = true)
     public UserResponseDTO getUser(String id) {
         User user = findUserById(id);
@@ -39,6 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(cacheNames = "{userInfo}", key = "#id")
     @Transactional
     public UserResponseDTO patchUser(String id,
                                      UserUpdateDTO userUpdateDTO,
