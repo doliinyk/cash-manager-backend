@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,8 +22,8 @@ import java.util.*;
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements UserDetails {
     @NotBlank(message = "Login is missing")
-    @Pattern(regexp = "^(?=.*[a-zA-Z])\\w{3,30}$", message = "Login not valid (please use only a-z0-9_-)")
-    @Size(min = 3, max = 30, message = "Login must be between 3 and 30")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])\\w{3,30}$",
+            message = "Login must contain at least one letter and can contain numbers or underscore from 3 to 30 symbols")
     @Column(name = "login", nullable = false, length = 30)
     private String login;
 

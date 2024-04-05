@@ -36,7 +36,7 @@ cashmanager:
     jwt:
       issuer: ${JWT_ISSUER}
       access-token-minutes-amount: ${JWT_ACCESS_TOKEN_MINUTES_AMOUNT}
-      refresh-token-minutes-amount: ${JWT_REFRESH_TOKEN_MINUTES_AMOUNT}
+      refresh-token-days-amount: ${JWT_REFRESH_TOKEN_DAYS_AMOUNT}
     rsa:
       access-public-key: classpath:certs/access-public-key.pem
       access-private-key: classpath:certs/access-private-key.pem
