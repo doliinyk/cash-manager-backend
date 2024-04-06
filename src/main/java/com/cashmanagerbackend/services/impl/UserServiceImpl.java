@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CachePut
+    @CachePut(key = "#id")
     @Transactional
     public UserResponseDTO patchUser(String id,
                                      UserUpdateDTO userUpdateDTO,
@@ -89,7 +89,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict
     @Transactional
     public void restoreUser(UserRegisterDTO userRegisterDTO) {
         User user = userRepository.findByLoginAndEmail(userRegisterDTO.login(), userRegisterDTO.email()).orElseThrow(
@@ -98,6 +97,8 @@ public class UserServiceImpl implements UserService {
 
         if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
             user.setDeleteDate(null);
+        } else if (user.isEnabled()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this login and email don't deleted");
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
         }
