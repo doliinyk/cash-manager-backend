@@ -9,6 +9,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate.ddl-auto: validate
+  cache.caffeine.spec: initialCapacity=100, maximumSize=500, expireAfterAccess=30m
   mail:
     username: ${EMAIL}
     password: ${EMAIL_PASSWORD}
@@ -45,4 +46,6 @@ server.error:
     include-binding-errors: always
     include-stacktrace: never
 
-logging.level.org.springframework: INFO
+logging:
+  level:
+    org.springframework: INFO

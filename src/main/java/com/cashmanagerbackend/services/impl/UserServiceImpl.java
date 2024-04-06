@@ -11,6 +11,10 @@ import com.cashmanagerbackend.services.EmailService;
 import com.cashmanagerbackend.services.UserService;
 import com.cashmanagerbackend.utils.Util;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@CacheConfig(cacheNames = "user")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -31,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Cacheable
     @Transactional(readOnly = true)
     public UserResponseDTO getUser(String id) {
         User user = findUserById(id);
@@ -39,6 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CachePut(key = "#id")
     @Transactional
     public UserResponseDTO patchUser(String id,
                                      UserUpdateDTO userUpdateDTO,
@@ -61,6 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @CacheEvict
     @Transactional
     public void deleteUser(String id) {
         User user = findUserById(id);
@@ -87,7 +95,9 @@ public class UserServiceImpl implements UserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this login and email not found")
         );
 
-        if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
+        if (user.isEnabled()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this login and email doesn't deleted");
+        } else if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
             user.setDeleteDate(null);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
