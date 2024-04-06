@@ -45,8 +45,8 @@ class AuthControllerTest {
     @DisplayName("Should return UUID of created user and created status code when register user")
     void testRegister() throws Exception {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("login", "12345678", "email@email.com");
-        String locale = "en";
         String redirectUrl = "http://example.com/register";
+        String locale = "en";
 
         UUID uuid = UUID.randomUUID();
 
@@ -59,8 +59,8 @@ class AuthControllerTest {
 
         mockMvc.perform(post(URL_AUTH_REGISTER)
                                 .contentType("application/json")
-                                .param("locale", locale)
                                 .param("redirectUrl", redirectUrl)
+                                .param("locale", locale)
                                 .content(objectMapper.writeValueAsString(userRegisterDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("\"" + uuid + "\""));
@@ -87,8 +87,8 @@ class AuthControllerTest {
     @DisplayName("Should return ok status code when send activation email")
     void testSendActivationEmail() throws Exception {
         EmailDTO emailDTO = new EmailDTO("email@email.com");
-        String locale = "en";
         String redirectUrl = "http://example.com/register";
+        String locale = "en";
 
         Map<String, Object> variables = new HashMap<>();
         variables.put("redirectUrl", redirectUrl);
@@ -96,8 +96,8 @@ class AuthControllerTest {
 
         mockMvc.perform(post(URL_AUTH_SEND_ACTIVATION_EMAIL)
                                 .contentType("application/json")
-                                .param("locale", locale)
                                 .param("redirectUrl", redirectUrl)
+                                .param("locale", locale)
                                 .content(objectMapper.writeValueAsString(emailDTO)))
                 .andExpect(status().isOk());
 

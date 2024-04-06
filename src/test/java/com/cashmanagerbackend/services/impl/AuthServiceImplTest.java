@@ -60,8 +60,8 @@ class AuthServiceImplTest {
     @DisplayName("Should create and return user's UUID when register user")
     void testRegisterUser() {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("login", "password", "email@email.com");
-        String locale = "en";
         Map<String, Object> variables = new HashMap<>();
+        String locale = "en";
 
         User user = new User();
         user.setEmail(userRegisterDTO.email());
@@ -84,8 +84,8 @@ class AuthServiceImplTest {
     @DisplayName("Should throw ResponseStatusException with conflict status when register user with duplicate login")
     void testRegisterUserWithDuplicateLogin() {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("login", "password", "email@email.com");
-        String locale = "en";
         Map<String, Object> variables = new HashMap<>();
+        String locale = "en";
 
         when(userRepository.existsByLogin(userRegisterDTO.login())).thenReturn(true);
 
@@ -102,8 +102,8 @@ class AuthServiceImplTest {
     @DisplayName("Should throw ResponseStatusException with conflict status when register user with duplicate email")
     void testRegisterUserWithDuplicateEmail() {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("login", "password", "email@email.com");
-        String locale = "en";
         Map<String, Object> variables = new HashMap<>();
+        String locale = "en";
 
         when(userRepository.existsByEmail(userRegisterDTO.email())).thenReturn(true);
 
@@ -170,8 +170,8 @@ class AuthServiceImplTest {
     @DisplayName("Should send mail when sendActivationEmail called")
     void testSendActivationEmail() {
         EmailDTO emailDTO = new EmailDTO("email@email.com");
-        String locale = "en";
         Map<String, Object> variables = new HashMap<>();
+        String locale = "en";
 
         User user = new User();
         user.setEmail(emailDTO.email());
@@ -191,8 +191,8 @@ class AuthServiceImplTest {
     )
     void testSendActivationEmailWithUserDoesntExist() {
         EmailDTO emailDTO = new EmailDTO("email@email.com");
-        String locale = "en";
         Map<String, Object> variables = new HashMap<>();
+        String locale = "en";
 
         when(userRepository.findByEmail(emailDTO.email())).thenReturn(Optional.empty());
 
