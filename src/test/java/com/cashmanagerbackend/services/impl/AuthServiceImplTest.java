@@ -72,7 +72,7 @@ class AuthServiceImplTest {
         when(userMapper.dtoToEntity(userRegisterDTO)).thenReturn(user);
         when(userRepository.save(user)).thenReturn(user);
 
-        UUID uuid = authService.registerUser(userRegisterDTO, locale, variables);
+        UUID uuid = authService.registerUser(userRegisterDTO, variables, locale);
 
         assertEquals(user.getId(), uuid);
         verify(userRepository, times(1)).save(user);
@@ -91,7 +91,7 @@ class AuthServiceImplTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> authService.registerUser(userRegisterDTO, locale, variables)
+                () -> authService.registerUser(userRegisterDTO, variables, locale)
         );
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         verify(userRepository, never()).save(any());
@@ -109,7 +109,7 @@ class AuthServiceImplTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> authService.registerUser(userRegisterDTO, locale, variables)
+                () -> authService.registerUser(userRegisterDTO, variables, locale)
         );
         assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
         verify(userRepository, never()).save(any());
@@ -178,7 +178,7 @@ class AuthServiceImplTest {
 
         when(userRepository.findByEmail(emailDTO.email())).thenReturn(Optional.of(user));
 
-        authService.sendActivationEmail(emailDTO, locale, variables);
+        authService.sendActivationEmail(emailDTO, variables, locale);
 
         assertNotNull(user.getActivationRefreshUUID());
         verify(emailService, times(1))
@@ -198,7 +198,7 @@ class AuthServiceImplTest {
 
         ResponseStatusException exception = assertThrows(
                 ResponseStatusException.class,
-                () -> authService.sendActivationEmail(emailDTO, locale, variables)
+                () -> authService.sendActivationEmail(emailDTO, variables, locale)
         );
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
         verify(emailService, never()).sendMail(anyString(), anyString(), anyString(), anyMap(), anyString());

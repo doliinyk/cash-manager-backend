@@ -20,21 +20,22 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public UserResponseDTO getUser(Principal principal){
+    public UserResponseDTO getUser(Principal principal) {
         return userService.getUser(principal.getName());
     }
 
     @PatchMapping
     public UserResponseDTO patchUser(Principal principal, @RequestBody UserUpdateDTO userUpdateDTO,
-                          @RequestParam(required = false) String locale,
-                          @RequestParam(required = false) String redirectUrl,
-                          HttpServletRequest request) {
+                                     @RequestParam(required = false) String redirectUrl,
+                                     @RequestParam(required = false) String locale,
+                                     HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
-        return userService.patchUser(principal.getName(), userUpdateDTO, locale, variables);
+
+        return userService.patchUser(principal.getName(), userUpdateDTO, variables, locale);
     }
 
     @DeleteMapping
-    public void deleteUser(Principal principal){
+    public void deleteUser(Principal principal) {
         userService.deleteUser(principal.getName());
     }
 
@@ -44,7 +45,7 @@ public class UserController {
     }
 
     @PatchMapping("/restore-user")
-    public void restoreUser(@RequestBody UserRegisterDTO userRegisterDTO){
+    public void restoreUser(@RequestBody UserRegisterDTO userRegisterDTO) {
         userService.restoreUser(userRegisterDTO);
     }
 }
