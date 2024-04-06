@@ -95,10 +95,10 @@ public class UserServiceImpl implements UserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this login and email not found")
         );
 
-        if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
+        if (user.isEnabled()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this login and email doesn't deleted");
+        } else if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
             user.setDeleteDate(null);
-        } else if (user.isEnabled()){
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this login and email don't deleted");
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password");
         }
