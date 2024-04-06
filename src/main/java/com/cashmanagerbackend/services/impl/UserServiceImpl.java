@@ -49,8 +49,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDTO patchUser(String id,
                                      UserUpdateDTO userUpdateDTO,
-                                     String locale,
-                                     Map<String, Object> variables) {
+                                     Map<String, Object> variables, String locale) {
         User user = findUserById(id);
         verifyDtoLoginEmailExists(userUpdateDTO, user);
 
@@ -95,7 +94,7 @@ public class UserServiceImpl implements UserService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User with this login and email not found")
         );
 
-        if (user.isEnabled()){
+        if (user.isEnabled()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this login and email doesn't deleted");
         } else if (passwordEncoder.matches(userRegisterDTO.password(), user.getPassword())) {
             user.setDeleteDate(null);

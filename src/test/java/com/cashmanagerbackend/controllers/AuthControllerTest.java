@@ -54,7 +54,7 @@ class AuthControllerTest {
         variables.put("redirectUrl", redirectUrl);
         variables.put("isFrontendRequest", true);
 
-        when(authService.registerUser(userRegisterDTO, locale, variables))
+        when(authService.registerUser(userRegisterDTO, variables, locale))
                 .thenReturn(uuid);
 
         mockMvc.perform(post(URL_AUTH_REGISTER)
@@ -65,7 +65,7 @@ class AuthControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("\"" + uuid + "\""));
 
-        verify(authService, times(1)).registerUser(userRegisterDTO, locale, variables);
+        verify(authService, times(1)).registerUser(userRegisterDTO, variables, locale);
     }
 
     @Test
@@ -101,7 +101,7 @@ class AuthControllerTest {
                                 .content(objectMapper.writeValueAsString(emailDTO)))
                 .andExpect(status().isOk());
 
-        verify(authService, times(1)).sendActivationEmail(emailDTO, locale, variables);
+        verify(authService, times(1)).sendActivationEmail(emailDTO, variables, locale);
     }
 
     @Test

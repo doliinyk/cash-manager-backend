@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public UUID registerUser(UserRegisterDTO userRegisterDTO, String locale, Map<String, Object> variables) {
+    public UUID registerUser(UserRegisterDTO userRegisterDTO, Map<String, Object> variables, String locale) {
         if (userRepository.existsByLogin(userRegisterDTO.login())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User with this login already exists");
         } else if (userRepository.existsByEmail(userRegisterDTO.email())) {
@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
+    public void sendActivationEmail(EmailDTO emailDTO, Map<String, Object> variables, String locale) {
         User user = findUserByEmail(emailDTO);
 
         user.setActivationRefreshUUID(UUID.randomUUID());
@@ -120,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables) {
+    public void forgotPassword(EmailDTO emailDTO, Map<String, Object> variables, String locale) {
         User user = findUserByEmail(emailDTO);
 
         user.setActivationRefreshUUID(UUID.randomUUID());

@@ -32,12 +32,12 @@ public class AuthController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UUID register(@RequestBody @Valid UserRegisterDTO userRegisterDTO,
-                         @RequestParam(required = false) String locale,
                          @RequestParam(required = false) String redirectUrl,
+                         @RequestParam(required = false) String locale,
                          HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
-        return authService.registerUser(userRegisterDTO, locale, variables);
+        return authService.registerUser(userRegisterDTO, variables, locale);
     }
 
     @PostMapping("/activate")
@@ -48,12 +48,12 @@ public class AuthController {
 
     @PostMapping("/send-activation-email")
     public void sendActivationEmail(@RequestBody @Valid EmailDTO emailDTO,
-                                    @RequestParam(required = false) String locale,
                                     @RequestParam(required = false) String redirectUrl,
+                                    @RequestParam(required = false) String locale,
                                     HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
-        authService.sendActivationEmail(emailDTO, locale, variables);
+        authService.sendActivationEmail(emailDTO, variables, locale);
     }
 
     @PostMapping("/login")
@@ -74,12 +74,12 @@ public class AuthController {
 
     @PostMapping("/forgot")
     public void forgotPassword(@RequestBody @Valid EmailDTO emailDTO,
-                               @RequestParam(required = false) String locale,
                                @RequestParam(required = false) String redirectUrl,
+                               @RequestParam(required = false) String locale,
                                HttpServletRequest request) {
         Map<String, Object> variables = Util.createObjectVariables(redirectUrl, request);
 
-        authService.forgotPassword(emailDTO, locale, variables);
+        authService.forgotPassword(emailDTO, variables, locale);
     }
 
     @PostMapping("/reset")

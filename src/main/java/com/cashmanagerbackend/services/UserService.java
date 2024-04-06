@@ -11,7 +11,7 @@ import java.util.Map;
 public interface UserService extends UserDetailsService {
     UserResponseDTO getUser(String id);
 
-    UserResponseDTO patchUser(String id, UserUpdateDTO userUpdateDTO, String locale, Map<String, Object> variables);
+    UserResponseDTO patchUser(String id, UserUpdateDTO userUpdateDTO, Map<String, Object> variables, String locale);
 
     void deleteUser(String id);
 

@@ -11,17 +11,17 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface AuthService {
-    UUID registerUser(UserRegisterDTO userRegisterDTO, String locale, Map<String, Object> variables);
+    UUID registerUser(UserRegisterDTO userRegisterDTO, Map<String, Object> variables, String locale);
 
     void activateUser(UUID userId, String activationToken);
 
-    void sendActivationEmail(EmailDTO emailDTO, String locale, Map<String, Object> variables);
+    void sendActivationEmail(EmailDTO emailDTO, Map<String, Object> variables, String locale);
 
     AccessRefreshTokenDTO loginUser(User user);
 
     AccessRefreshTokenDTO refreshUserTokens(JWTTokenDTO jwtTokenDTO);
 
-    void forgotPassword(EmailDTO emailDTO, String locale, Map<String, Object> variables);
+    void forgotPassword(EmailDTO emailDTO, Map<String, Object> variables, String locale);
 
     void resetPassword(ResetPasswordDTO resetPasswordDTO);
 }
