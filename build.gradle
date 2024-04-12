@@ -59,6 +59,7 @@ dependencies {
     testImplementation 'com.h2database:h2'
     testImplementation 'org.projectlombok:lombok'
     testImplementation 'com.icegreen:greenmail:2.0.1'
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.0'
 }
 
 tasks.named('test') {
