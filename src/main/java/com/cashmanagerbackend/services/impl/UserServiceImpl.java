@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public void patchUserPassword(String id, UserPasswordUpdateDTO userPasswordUpdateDTO) {
         User user = findUserById(id);
 
-        if (passwordEncoder.matches(userPasswordUpdateDTO.oldPassword(), user.getPassword())) {
+        if (passwordEncoder.matches(userPasswordUpdateDTO.oldPassword(), user.getPassword())){
             user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.newPassword()));
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong old password");

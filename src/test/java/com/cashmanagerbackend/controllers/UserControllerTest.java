@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.security.Principal;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@WithMockUser
 class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -39,18 +41,14 @@ class UserControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @MockBean
     private Principal principal;
-
-    @BeforeEach
-    void beforeEach() {
-        this.principal = mock(Principal.class);
-    }
 
     @Test
     @DisplayName("Should return data about user like login, email, create date and account")
     void getUser() throws Exception {
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO("bash", "garet2004@gmail.com", LocalDateTime.of(2015,
+        UserResponseDTO userResponseDTO = new UserResponseDTO("bash", "email@email.com", LocalDateTime.of(2015,
                 Month.JULY, 29, 19, 30, 44, 470471944), 0);
 
         when(userService.getUser(principal.getName())).thenReturn(userResponseDTO);
@@ -93,6 +91,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should return is OK status when delete user")
     void deleteUser() throws Exception {
         mockMvc.perform(delete(URL_USER)
                 .principal(principal))
@@ -100,6 +99,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should return is OK status when restore patch user password")
     void patchUserPassword() throws Exception {
         UserPasswordUpdateDTO userPasswordUpdateDTO =
                 new UserPasswordUpdateDTO("password", "password2");
@@ -112,6 +112,7 @@ class UserControllerTest {
     }
 
     @Test
+    @DisplayName("Should return is OK status when restore user")
     void restoreUser() throws Exception {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO("bash", "password", "email@email.com");
 
