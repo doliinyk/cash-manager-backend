@@ -20,7 +20,7 @@ import java.util.*;
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity implements UserDetails, Comparable<User>{
     @NotBlank(message = "Login is missing")
     @Pattern(regexp = "^(?=.*[a-zA-Z])\\w{3,30}$",
             message = "Login must contain at least one letter and can contain numbers or underscore from 3 to 30 symbols")
@@ -55,6 +55,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "activation_refresh_uuid")
     private UUID activationRefreshUUID;
 
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private SortedSet<ExpenseCategory> expenseCategories = new TreeSet<>();
+
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    private SortedSet<IncomeCategory> incomeCategories = new TreeSet<>();
+
     @OneToMany(mappedBy = "user")
     private transient Set<RegularExpense> regularExpenses = new LinkedHashSet<>();
 
@@ -66,12 +72,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user")
     private transient Set<SingleIncome> singleIncomes = new LinkedHashSet<>();
-
-    @ManyToMany(mappedBy = "users")
-    private transient Set<ExpenseCategory> expenseCategories = new LinkedHashSet<>();
-
-    @ManyToMany(mappedBy = "users")
-    private transient Set<IncomeCategory> incomeCategories = new LinkedHashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -106,5 +106,10 @@ public class User extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return (deleteDate == null && activated);
+    }
+
+    @Override
+    public int compareTo(User o) {
+        return this.getId().compareTo(o.getId());
     }
 }
