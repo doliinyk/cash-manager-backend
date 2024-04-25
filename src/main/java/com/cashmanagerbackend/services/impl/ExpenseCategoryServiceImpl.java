@@ -1,6 +1,8 @@
 package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.AddCategoryRequestDTO;
+import com.cashmanagerbackend.dtos.requests.DeleteCategoryRequestDTO;
+import com.cashmanagerbackend.dtos.requests.PatchCategoryRequestDTO;
 import com.cashmanagerbackend.dtos.responses.CategoryResponseDTO;
 import com.cashmanagerbackend.entities.ExpenseCategory;
 import com.cashmanagerbackend.entities.User;
@@ -46,36 +48,94 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         UsersExpenseCategory usersExpenseCategory;
         ExpenseCategory expenseCategory;
 
-        for (ExpenseCategory i:
-            user.getExpenseCategories()) {
-            if (i.getTitle().equals(addCategoryRequestDTO.title())){
+        for (ExpenseCategory i :
+                user.getExpenseCategories()) {
+            if (i.getTitle().equals(addCategoryRequestDTO.title())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "User already have this category");
             }
         }
         if (expenseCategoryOptional.isPresent()) {
-            user.getExpenseCategories().add(expenseCategoryOptional.get());
-            expenseCategoryOptional.get().getUsers().add(user);
-
+            expenseCategories.add(expenseCategoryOptional.get());
             usersExpenseCategory = new UsersExpenseCategory();
             usersExpenseCategory.setUser(user);
             usersExpenseCategory.setCategory(expenseCategoryOptional.get());
             usersExpenseCategory.setColorCode(addCategoryRequestDTO.colorCode());
             usersExpenseCategoryRepository.save(usersExpenseCategory);
         } else {
-            usersExpenseCategory = new UsersExpenseCategory();
-            usersExpenseCategory.setColorCode(addCategoryRequestDTO.colorCode());
-            usersExpenseCategory.setUser(user);
-            usersExpenseCategory = usersExpenseCategoryRepository.save(usersExpenseCategory);
-
             expenseCategory = new ExpenseCategory();
             expenseCategory.setTitle(addCategoryRequestDTO.title());
             expenseCategory = expenseCategoryRepository.save(expenseCategory);
+
+            usersExpenseCategory = new UsersExpenseCategory();
+            usersExpenseCategory.setColorCode(addCategoryRequestDTO.colorCode());
+            usersExpenseCategory.setUser(user);
             usersExpenseCategory.setCategory(expenseCategory);
+            usersExpenseCategory = usersExpenseCategoryRepository.save(usersExpenseCategory);
+
             expenseCategories.add(expenseCategory);
         }
 
         usersExpenseCategories.add(usersExpenseCategory);
         return packColorCodeExpenseCategoryMap(expenseCategories, usersExpenseCategories);
+    }
+
+    @Override
+    @Transactional
+    public Map<String, CategoryResponseDTO> patchUserExspensesCategory(String name,
+                                                                       PatchCategoryRequestDTO patchCategoryRequestDTO) {
+        User user = findUserById(name);
+        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle());
+        UsersExpenseCategory usersExpenseCategory = usersExpenseCategoryRepository.findByUserAndCategory(user, expenseCategory).get();
+        ExpenseCategory newExpenseCategory = expenseCategory;
+
+        if (!usersExpenseCategory.getColorCode().equals(patchCategoryRequestDTO.colorCode())
+                && patchCategoryRequestDTO.colorCode() != null && !patchCategoryRequestDTO.colorCode().isEmpty()) {
+            usersExpenseCategory.setColorCode(patchCategoryRequestDTO.colorCode());
+        }
+        if (!expenseCategory.getTitle().equals(patchCategoryRequestDTO.newTitle())
+                && patchCategoryRequestDTO.newTitle() != null && !patchCategoryRequestDTO.newTitle().isEmpty()) {
+            Optional<ExpenseCategory> expenseCategoryOptional = expenseCategoryRepository.findByTitle(patchCategoryRequestDTO.newTitle());
+            if (expenseCategoryOptional.isPresent()) {
+                usersExpenseCategory.setCategory(expenseCategoryOptional.get());
+                expenseCategory.getUsers().remove(user);
+                newExpenseCategory = new ExpenseCategory();
+                newExpenseCategory.setTitle(patchCategoryRequestDTO.newTitle());
+            } else {
+                newExpenseCategory = new ExpenseCategory();
+                newExpenseCategory.setTitle(patchCategoryRequestDTO.newTitle());
+                newExpenseCategory = expenseCategoryRepository.save(newExpenseCategory);
+                usersExpenseCategory.setCategory(newExpenseCategory);
+                usersExpenseCategoryRepository.save(usersExpenseCategory);
+                expenseCategory.getUsers().remove(user);
+            }
+            ArrayList<String> standardCategoryTitles =
+                    new ArrayList<>(Arrays.asList("health", "entertainment", "house", "cafe", "education", "gifts", "family", "transport","other"));
+            if (expenseCategory.getUsers().isEmpty() && !standardCategoryTitles.contains(expenseCategory.getTitle())){
+                expenseCategoryRepository.deleteById(expenseCategory.getId());
+            }
+        }
+
+        HashMap<String, CategoryResponseDTO> map = new HashMap<>();
+        map.put(usersExpenseCategory.getColorCode(), expenseCategoryMapper.entityToDTO(newExpenseCategory));
+
+        return map;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserExspensesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO) {
+        User user = findUserById(name);
+        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title());
+        UsersExpenseCategory usersExpenseCategory =
+                usersExpenseCategoryRepository.findByUserAndCategory(user, expenseCategory).get();
+
+        expenseCategory.getUsers().remove(user);
+        ArrayList<String> standardCategoryTitles =
+                new ArrayList<>(Arrays.asList("health", "entertainment", "house", "cafe", "education", "gifts", "family", "transport","other"));
+        if (expenseCategory.getUsers().isEmpty() && !standardCategoryTitles.contains(expenseCategory.getTitle())){
+            expenseCategoryRepository.deleteById(expenseCategory.getId());
+        }
+//        usersExpenseCategoryRepository.deleteById(usersExpenseCategory.getId());
     }
 
     private User findUserById(String id) {
@@ -84,7 +144,18 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
                         "User with this ID doesn't exist"));
     }
 
-    private Map<String, CategoryResponseDTO> packColorCodeExpenseCategoryMap(SortedSet<ExpenseCategory> expenseCategories, SortedSet<UsersExpenseCategory> usersExpenseCategories){
+    private ExpenseCategory findCategoryInUserByTitle(User user, String title) {
+        for (ExpenseCategory expenseCategory :
+                user.getExpenseCategories()) {
+            if (expenseCategory.getTitle().equals(title)) {
+                return expenseCategory;
+            }
+        }
+        throw new ResponseStatusException(HttpStatus.CONFLICT,
+                "User doesn't have this category");
+    }
+
+    private Map<String, CategoryResponseDTO> packColorCodeExpenseCategoryMap(SortedSet<ExpenseCategory> expenseCategories, SortedSet<UsersExpenseCategory> usersExpenseCategories) {
         HashMap<String, CategoryResponseDTO> map = new HashMap<>();
         Iterator<ExpenseCategory> expenseCategory = expenseCategories.iterator();
 
@@ -94,3 +165,4 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         return map;
     }
 }
+     

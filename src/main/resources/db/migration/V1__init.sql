@@ -22,7 +22,7 @@ CREATE TABLE users_expense_categories
 (
     id UUID PRIMARY KEY NOT NULL,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE not null ,
-	category_id UUID REFERENCES expense_categories(id) ON DELETE CASCADE,
+	category_id UUID REFERENCES expense_categories(id),
     color_code text not null
 );
 
@@ -58,7 +58,7 @@ CREATE TABLE users_income_categories
 (
     id UUID PRIMARY KEY NOT NULL,
     user_id UUID REFERENCES users(id) ON DELETE CASCADE not null,
-    category_id UUID REFERENCES income_categories(id ) ON DELETE CASCADE,
+    category_id UUID REFERENCES income_categories(id ),
     color_code text not null
 );
 
