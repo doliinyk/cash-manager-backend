@@ -121,10 +121,10 @@ BEGIN
         end;
         BEGIN
         insert into users_income_categories(id, category_id, user_id, color_code)
-        values (gen_random_uuid (), '20b6edfa-3e47-4aa7-96b3-6f03d36a1596',new.id,'#00FF00'),
+        values (gen_random_uuid (), '20b6edfa-3e47-4aa7-96b3-6f03d36a1596',new.id,'#FFFF00'),
                (gen_random_uuid (), '2b303c2c-aff1-495d-8abb-cebc99762f7d',new.id,'#00FF00'),
-               (gen_random_uuid (), '911e2af3-95d3-4112-bb9d-4a3b529562e9',new.id,'#00FF00'),
-               (gen_random_uuid (), 'c3b5f88d-88c4-4a43-a84f-3740df7f4aab',new.id,'#00FF00');
+               (gen_random_uuid (), '911e2af3-95d3-4112-bb9d-4a3b529562e9',new.id,'#008000'),
+               (gen_random_uuid (), 'c3b5f88d-88c4-4a43-a84f-3740df7f4aab',new.id,'#808080');
         end;
         return new;
     end if;

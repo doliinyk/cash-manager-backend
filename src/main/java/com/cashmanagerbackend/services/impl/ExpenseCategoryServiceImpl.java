@@ -84,7 +84,9 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     public Map<String, CategoryResponseDTO> patchUserExspensesCategory(String name,
                                                                        PatchCategoryRequestDTO patchCategoryRequestDTO) {
         User user = findUserById(name);
-        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle());
+        ExpenseCategory expenseCategory = expenseCategoryRepository.findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
+                        "User doesn't have this category"));
         UsersExpenseCategory usersExpenseCategory = usersExpenseCategoryRepository.findByUserAndCategory(user, expenseCategory).get();
         ExpenseCategory newExpenseCategory = expenseCategory;
 
@@ -125,9 +127,9 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     @Transactional
     public void deleteUserExspensesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO) {
         User user = findUserById(name);
-        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title());
-        UsersExpenseCategory usersExpenseCategory =
-                usersExpenseCategoryRepository.findByUserAndCategory(user, expenseCategory).get();
+        ExpenseCategory expenseCategory = expenseCategoryRepository.findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
+                        "User doesn't have this category"));
 
         expenseCategory.getUsers().remove(user);
         ArrayList<String> standardCategoryTitles =
@@ -135,24 +137,12 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         if (expenseCategory.getUsers().isEmpty() && !standardCategoryTitles.contains(expenseCategory.getTitle())){
             expenseCategoryRepository.deleteById(expenseCategory.getId());
         }
-//        usersExpenseCategoryRepository.deleteById(usersExpenseCategory.getId());
     }
 
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "User with this ID doesn't exist"));
-    }
-
-    private ExpenseCategory findCategoryInUserByTitle(User user, String title) {
-        for (ExpenseCategory expenseCategory :
-                user.getExpenseCategories()) {
-            if (expenseCategory.getTitle().equals(title)) {
-                return expenseCategory;
-            }
-        }
-        throw new ResponseStatusException(HttpStatus.CONFLICT,
-                "User doesn't have this category");
     }
 
     private Map<String, CategoryResponseDTO> packColorCodeExpenseCategoryMap(SortedSet<ExpenseCategory> expenseCategories, SortedSet<UsersExpenseCategory> usersExpenseCategories) {
