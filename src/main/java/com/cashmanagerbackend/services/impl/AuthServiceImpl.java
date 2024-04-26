@@ -46,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtEncoder jwtAccessEncoder;
     @Qualifier("refreshEncoder")
     private final JwtEncoder jwtRefreshEncoder;
+    @Qualifier("refreshDecoder")
     private final JwtDecoder jwtRefreshDecoder;
     private final PasswordEncoder passwordEncoder;
 
