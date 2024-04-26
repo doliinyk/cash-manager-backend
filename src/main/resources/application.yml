@@ -9,6 +9,10 @@ spring:
   jpa:
     open-in-view: false
     hibernate.ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   cache.caffeine.spec: initialCapacity=100, maximumSize=500, expireAfterAccess=30m
   mail:
     username: ${EMAIL}
