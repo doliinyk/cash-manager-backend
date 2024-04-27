@@ -6,14 +6,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "income_categories")
-public class IncomeCategory extends BaseEntity {
+public class IncomeCategory extends BaseEntity implements Comparable<IncomeCategory> {
     @NotBlank(message = "Title can't be blank")
     @Size(min = 2, max = 50, message = "Title must be between 2 and 50 characters long")
     @Column(name = "title", nullable = false, length = 50)
@@ -23,5 +23,10 @@ public class IncomeCategory extends BaseEntity {
     @JoinTable(name = "users_income_categories",
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new LinkedHashSet<>();
+    private SortedSet<User> users = new TreeSet<>();
+
+    @Override
+    public int compareTo(IncomeCategory o) {
+        return getId().compareTo(o.getId());
+    }
 }

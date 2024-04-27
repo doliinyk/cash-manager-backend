@@ -84,9 +84,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     public Map<String, CategoryResponseDTO> patchUserExspensesCategory(String name,
                                                                        PatchCategoryRequestDTO patchCategoryRequestDTO) {
         User user = findUserById(name);
-        ExpenseCategory expenseCategory = expenseCategoryRepository.findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-                        "User doesn't have this category"));
+        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle());
         UsersExpenseCategory usersExpenseCategory = usersExpenseCategoryRepository.findByUserAndCategory(user, expenseCategory).get();
         ExpenseCategory newExpenseCategory = expenseCategory;
 
@@ -127,9 +125,7 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
     @Transactional
     public void deleteUserExspensesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO) {
         User user = findUserById(name);
-        ExpenseCategory expenseCategory = expenseCategoryRepository.findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-                        "User doesn't have this category"));
+        ExpenseCategory expenseCategory = findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title());
 
         expenseCategory.getUsers().remove(user);
         ArrayList<String> standardCategoryTitles =
@@ -153,6 +149,12 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
             map.put(usersExpenseCategory.getColorCode(), expenseCategoryMapper.entityToDTO(expenseCategory.next()));
         }
         return map;
+    }
+
+    private ExpenseCategory findCategoryInUserByTitle(User user, String title){
+        return expenseCategoryRepository.findCategoryInUserByTitle(user, title)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
+                        "User doesn't have this category"));
     }
 }
      
