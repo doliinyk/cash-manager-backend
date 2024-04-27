@@ -84,9 +84,7 @@ public class IncomeCategoryServiceImpl implements IncomeCategoryService {
     public Map<String, CategoryResponseDTO> patchUserIncomesCategory(String name,
                                                                        PatchCategoryRequestDTO patchCategoryRequestDTO) {
         User user = findUserById(name);
-        IncomeCategory incomeCategory = incomeCategoryRepository.findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-                        "User doesn't have this category"));
+        IncomeCategory incomeCategory = findCategoryInUserByTitle(user, patchCategoryRequestDTO.oldTitle());
         UsersIncomeCategory usersIncomeCategory = usersIncomeCategoryRepository.findByUserAndCategory(user, incomeCategory).get();
         IncomeCategory newIncomeCategory = incomeCategory;
 
@@ -127,10 +125,7 @@ public class IncomeCategoryServiceImpl implements IncomeCategoryService {
     @Transactional
     public void deleteUserIncomesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO) {
         User user = findUserById(name);
-        IncomeCategory incomeCategory = incomeCategoryRepository.findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
-                        "User doesn't have this category"));
-
+        IncomeCategory incomeCategory = findCategoryInUserByTitle(user, deleteCategoryRequestDTO.title());
 
         incomeCategory.getUsers().remove(user);
         ArrayList<String> standardCategoryTitles =
@@ -154,5 +149,11 @@ public class IncomeCategoryServiceImpl implements IncomeCategoryService {
             map.put(usersIncomeCategory.getColorCode(), incomeCategoryMapper.entityToDTO(incomeCategory.next()));
         }
         return map;
+    }
+
+    private IncomeCategory findCategoryInUserByTitle(User user, String title){
+        return incomeCategoryRepository.findCategoryInUserByTitle(user, title)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT,
+                        "User doesn't have this category"));
     }
 }
