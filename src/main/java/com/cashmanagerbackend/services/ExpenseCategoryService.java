@@ -15,4 +15,6 @@ public interface ExpenseCategoryService {
     Map<String, CategoryResponseDTO> patchUserExspensesCategory(String name, PatchCategoryRequestDTO patchCategoryRequestDTO);
 
     void deleteUserExspensesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO);
+
+    CategoryResponseDTO getUserExspensesCategoryByTitle(String userId, String title);
 }

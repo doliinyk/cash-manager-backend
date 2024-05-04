@@ -135,6 +135,13 @@ public class IncomeCategoryServiceImpl implements IncomeCategoryService {
         }
     }
 
+    @Override
+    public CategoryResponseDTO getUserIncomesCategoryByTitle(String userId, String title) {
+        User user = findUserById(userId);
+
+        return incomeCategoryMapper.entityToDTO(findCategoryInUserByTitle(user, title));
+    }
+
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,

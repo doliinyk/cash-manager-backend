@@ -2,9 +2,11 @@ package com.cashmanagerbackend.controllers;
 
 import com.cashmanagerbackend.dtos.requests.AddCategoryRequestDTO;
 import com.cashmanagerbackend.dtos.requests.DeleteCategoryRequestDTO;
+import com.cashmanagerbackend.dtos.requests.GetUserCategoryByIdDTO;
 import com.cashmanagerbackend.dtos.requests.PatchCategoryRequestDTO;
 import com.cashmanagerbackend.dtos.responses.CategoryResponseDTO;
 import com.cashmanagerbackend.services.ExpenseCategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,21 +24,26 @@ public class ExpenseСategoryController {
          return expenseCategoryService.getUserExspensesCategory(principal.getName());
     }
 
+    @GetMapping("/by-title")
+    public CategoryResponseDTO getUserExspensesCategoryById(Principal principal, @RequestBody @Valid GetUserCategoryByIdDTO getUserCategoryByIdDTO){
+        return expenseCategoryService.getUserExspensesCategoryByTitle(principal.getName(), getUserCategoryByIdDTO.title());
+    }
+
     @PostMapping
     public Map<String, CategoryResponseDTO> postUserExspensesCategory
-            (Principal principal, @RequestBody AddCategoryRequestDTO addCategoryRequestDTO){
+            (Principal principal, @RequestBody @Valid AddCategoryRequestDTO addCategoryRequestDTO){
         return expenseCategoryService.postUserExspensesCategory(principal.getName(), addCategoryRequestDTO);
     }
 
     @PatchMapping
     public Map<String, CategoryResponseDTO> patchUserExspensesCategory
-            (Principal principal, @RequestBody PatchCategoryRequestDTO patchCategoryRequestDTO){
+            (Principal principal, @RequestBody @Valid PatchCategoryRequestDTO patchCategoryRequestDTO){
         return expenseCategoryService.patchUserExspensesCategory(principal.getName(), patchCategoryRequestDTO);
     }
 
     @DeleteMapping
     public void deleteUserExspensesCategory(Principal principal,
-                                            @RequestBody DeleteCategoryRequestDTO deleteCategoryRequestDTO){
+                                            @RequestBody @Valid DeleteCategoryRequestDTO deleteCategoryRequestDTO){
         expenseCategoryService.deleteUserExspensesCategory(principal.getName(), deleteCategoryRequestDTO);
     }
 }

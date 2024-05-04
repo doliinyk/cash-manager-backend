@@ -135,6 +135,13 @@ public class ExpenseCategoryServiceImpl implements ExpenseCategoryService {
         }
     }
 
+    @Override
+    public CategoryResponseDTO getUserExspensesCategoryByTitle(String userId, String title) {
+        User user = findUserById(userId);
+
+        return expenseCategoryMapper.entityToDTO(findCategoryInUserByTitle(user, title));
+    }
+
     private User findUserById(String id) {
         return userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
