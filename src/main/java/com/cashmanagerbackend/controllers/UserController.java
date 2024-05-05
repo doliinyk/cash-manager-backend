@@ -7,6 +7,7 @@ import com.cashmanagerbackend.dtos.responses.UserResponseDTO;
 import com.cashmanagerbackend.services.UserService;
 import com.cashmanagerbackend.utils.Util;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @PatchMapping
-    public UserResponseDTO patchUser(Principal principal, @RequestBody UserUpdateDTO userUpdateDTO,
+    public UserResponseDTO patchUser(Principal principal, @RequestBody @Valid UserUpdateDTO userUpdateDTO,
                                      @RequestParam(required = false) String redirectUrl,
                                      @RequestParam(required = false) String locale,
                                      HttpServletRequest request) {
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    public void patchUserPassword(Principal principal, @RequestBody UserPasswordUpdateDTO userPasswordUpdateDTO) {
+    public void patchUserPassword(Principal principal, @RequestBody @Valid UserPasswordUpdateDTO userPasswordUpdateDTO) {
         userService.patchUserPassword(principal.getName(), userPasswordUpdateDTO);
     }
 

@@ -3,7 +3,6 @@ package com.cashmanagerbackend.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -26,7 +25,7 @@ public class UsersExpenseCategory extends BaseEntity implements Comparable<Users
     private ExpenseCategory category;
 
     @Column(name = "color_code", length = Integer.MAX_VALUE)
-    @NotBlank(message = "(Color code is missing")
+    @NotBlank(message = "Color code is missing")
     private String colorCode;
 
     @Override

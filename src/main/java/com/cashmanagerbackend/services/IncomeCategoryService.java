@@ -8,11 +8,13 @@ import com.cashmanagerbackend.dtos.responses.CategoryResponseDTO;
 import java.util.Map;
 
 public interface IncomeCategoryService {
-    Map<String, CategoryResponseDTO> getUserIncomesCategory(String name);
+    Map<String, CategoryResponseDTO> getUserIncomesCategory(String id);
 
-    Map<String, CategoryResponseDTO> postUserIncomesCategory(String name, AddCategoryRequestDTO addCategoryRequestDTO);
+    Map<String, CategoryResponseDTO> postUserIncomesCategory(String id, AddCategoryRequestDTO addCategoryRequestDTO);
 
-    Map<String, CategoryResponseDTO> patchUserIncomesCategory(String name, PatchCategoryRequestDTO patchCategoryRequestDTO);
+    Map<String, CategoryResponseDTO> patchUserIncomesCategory(String id, PatchCategoryRequestDTO patchCategoryRequestDTO);
 
     void deleteUserIncomesCategory(String name, DeleteCategoryRequestDTO deleteCategoryRequestDTO);
+
+    CategoryResponseDTO getUserIncomesCategoryByTitle(String userId, String title);
 }
