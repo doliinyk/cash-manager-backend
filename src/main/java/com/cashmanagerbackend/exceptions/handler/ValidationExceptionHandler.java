@@ -31,17 +31,4 @@ public class ValidationExceptionHandler {
 
         return errors;
     }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = ResponseStatusException.class)
-    public Map<String, String> handleValidationExceptions(
-            ResponseStatusException ex) {
-        Map<String, String> errors = new HashMap<>();
-
-        errors.put("timestamp", String.valueOf(LocalDateTime.now()));
-        errors.put("status", ex.getStatusCode().toString());
-        errors.put("error", ex.getReason());
-
-        return errors;
-    }
 }

@@ -3,13 +3,13 @@ package com.cashmanagerbackend.repositories;
 import com.cashmanagerbackend.entities.SingleIncome;
 import com.cashmanagerbackend.entities.User;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -22,5 +22,7 @@ public interface SingleIncomeRepository extends PagingAndSortingRepository<Singl
 
     Page<SingleIncome> findAllByUserAndIncomeDateLessThanEqual(User user, OffsetDateTime to, Pageable pageable);
 
-    Page<SingleIncome>  findAllByUserAndDescriptionContains(User user, String description, PageRequest incomeDate);
+    Page<SingleIncome>  findAllByUserAndDescriptionContains(User user, String description, Pageable pageable);
+
+    Optional<SingleIncome> findByIdAndUser(UUID id, User user);
 }

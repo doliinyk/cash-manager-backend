@@ -3,19 +3,18 @@ package com.cashmanagerbackend.services;
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.SingleIncomeResponseDTO;
 import org.springframework.data.domain.Page;
-
-import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 public interface SingleIncomeService {
-    Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Optional<Integer> page, Optional<String> sortBy);
+    Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Pageable pageable);
 
     SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleExpenseIncomeDTO addSingleExpenseIncomeDTO);
 
-    SingleIncomeResponseDTO patchSingleIncomes(PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO);
+    SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO);
 
-    void deleteSingleIncomes(DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO);
+    void deleteSingleIncomes(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO);
 
-    Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Optional<Integer> page, Optional<String> sortBy, RangeDatesDTO rangeDatesDTO);
+    Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO);
 
-    Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Optional<Integer> page, Optional<String> sortBy, DescriptionDTO descriptionDTO);
+    Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO);
 }

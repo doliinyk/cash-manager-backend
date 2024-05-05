@@ -11,14 +11,12 @@ import com.cashmanagerbackend.repositories.UserRepository;
 import com.cashmanagerbackend.services.SingleIncomeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,16 +30,9 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
 
     @Override
     @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Optional<Integer> page, Optional<String> sortBy) {
+    public Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Pageable pageable) {
         User user = findUserById(id);
-        return singleIncomeRepository.findAllByUser(user,
-                PageRequest.of(
-                        page.orElse(0),
-                        5,
-                        Sort.Direction.ASC,
-                        sortBy.orElse(SORT_BY)
-                )
-        ).map(singleIncomeMapper::entityToDTO);
+        return singleIncomeRepository.findAllByUser(user, pageable).map(singleIncomeMapper::entityToDTO);
     }
 
     @Override
@@ -54,15 +45,14 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
                 incomeCategoryRepository.findCategoryInUserByTitle(user, addSingleExpenseIncomeDTO.category().title())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User don't have this category"))
         );
-        singleIncomeRepository.save(singleIncome);
 
-        return singleIncomeMapper.entityToDTO(singleIncome);
+        return singleIncomeMapper.entityToDTO(singleIncomeRepository.save(singleIncome));
     }
 
     @Override
     @Transactional
-    public SingleIncomeResponseDTO patchSingleIncomes(PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO) {
-        SingleIncome income = findSingleIncomeById(patchSingleExpenseIncomeDTO.id());
+    public SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO) {
+        SingleIncome income = findSingleIncomeByIdAndUser(patchSingleExpenseIncomeDTO.id(), findUserById(id));
 
         singleIncomeMapper.updateEntityFromDto(patchSingleExpenseIncomeDTO, income);
 
@@ -71,32 +61,28 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
 
     @Override
     @Transactional
-    public void deleteSingleIncomes(DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
-        SingleIncome singleIncome = findSingleIncomeById(deleteSingleExpenseIncomeDTO.id());
+    public void deleteSingleIncomes(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
+        User user = findUserById(id);
+        SingleIncome singleIncome = findSingleIncomeByIdAndUser(deleteSingleExpenseIncomeDTO.id(), user);
 
         singleIncomeRepository.delete(singleIncome);
     }
 
     @Override
     @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Optional<Integer> page, Optional<String> sortBy, RangeDatesDTO rangeDatesDTO) {
+    public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO) {
         User user = findUserById(id);
-        PageRequest pageRequest = PageRequest.of(
-                page.orElse(0),
-                5,
-                Sort.Direction.ASC,
-                sortBy.orElse(SORT_BY)
-        );
+
         if (rangeDatesDTO.from() != null && rangeDatesDTO.to() != null) {
             if (rangeDatesDTO.from().compareTo(rangeDatesDTO.to()) <= 0) {
                 return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqualAndIncomeDateLessThanEqual(user,
-                        rangeDatesDTO.from(), rangeDatesDTO.to(), pageRequest).map(singleIncomeMapper::entityToDTO);
+                        rangeDatesDTO.from(), rangeDatesDTO.to(), pageable).map(singleIncomeMapper::entityToDTO);
             } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
         } else if (rangeDatesDTO.from() != null) {
-            return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqual(user, rangeDatesDTO.from(), pageRequest)
+            return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqual(user, rangeDatesDTO.from(), pageable)
                     .map(singleIncomeMapper::entityToDTO);
         } else if (rangeDatesDTO.to() != null) {
-            return singleIncomeRepository.findAllByUserAndIncomeDateLessThanEqual(user, rangeDatesDTO.to(), pageRequest)
+            return singleIncomeRepository.findAllByUserAndIncomeDateLessThanEqual(user, rangeDatesDTO.to(), pageable)
                     .map(singleIncomeMapper::entityToDTO);
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
@@ -105,15 +91,10 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
 
     @Override
     @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Optional<Integer> page, Optional<String> sortBy, DescriptionDTO descriptionDTO) {
+    public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO) {
         User user = findUserById(id);
 
-        return singleIncomeRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), PageRequest.of(
-                        page.orElse(0),
-                        5,
-                        Sort.Direction.ASC,
-                        sortBy.orElse(SORT_BY)
-                )).map(singleIncomeMapper :: entityToDTO);
+        return singleIncomeRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), pageable).map(singleIncomeMapper :: entityToDTO);
     }
 
     private User findUserById(String id) {
@@ -122,9 +103,9 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
                         "User with this ID doesn't exist"));
     }
 
-    private SingleIncome findSingleIncomeById(String id) {
-        return singleIncomeRepository.findById(UUID.fromString(id))
+    private SingleIncome findSingleIncomeByIdAndUser(String id, User user) {
+        return singleIncomeRepository.findByIdAndUser(UUID.fromString(id), user)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Income with this ID doesn't exist"));
+                        "User doesn't have income with this ID"));
     }
 }

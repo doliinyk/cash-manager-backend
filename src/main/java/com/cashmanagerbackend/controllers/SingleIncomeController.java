@@ -6,6 +6,8 @@ import com.cashmanagerbackend.services.SingleIncomeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -18,21 +20,18 @@ public class SingleIncomeController {
     private final SingleIncomeService singleIncomeService;
 
     @GetMapping
-    public Page<SingleIncomeResponseDTO> getSingleIncomes(Principal principal, @RequestParam(required = false) Optional<Integer> page,
-                                                          @RequestParam(required = false) Optional<String> sortBy){
-        return singleIncomeService.getSingleIncomes(principal.getName(), page, sortBy);
+    public Page<SingleIncomeResponseDTO> getSingleIncomes(Principal principal, @PageableDefault Pageable pageable){
+        return singleIncomeService.getSingleIncomes(principal.getName(), pageable);
     }
 
     @GetMapping("/by-date")
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(Principal principal, @RequestParam(required = false) Optional<Integer> page,
-                                                                      @RequestParam(required = false) Optional<String> sortBy, @RequestBody RangeDatesDTO rangeDatesDTO) {
-        return singleIncomeService.getSingleIncomesByIncomeDate(principal.getName(), page, sortBy, rangeDatesDTO);
+    public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(Principal principal, @PageableDefault Pageable pageable, @RequestBody RangeDatesDTO rangeDatesDTO) {
+        return singleIncomeService.getSingleIncomesByIncomeDate(principal.getName(), pageable, rangeDatesDTO);
     }
 
     @GetMapping("/by-description")
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(Principal principal, @RequestParam(required = false) Optional<Integer> page,
-                                                                             @RequestParam(required = false) Optional<String> sortBy, @RequestBody DescriptionDTO descriptionDTO){
-        return singleIncomeService.getSingleIncomesByDescription(principal.getName(), page, sortBy, descriptionDTO);
+    public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(Principal principal, @PageableDefault Pageable pageable, @RequestBody DescriptionDTO descriptionDTO){
+        return singleIncomeService.getSingleIncomesByDescription(principal.getName(), pageable, descriptionDTO);
     }
 
     @PostMapping
@@ -41,12 +40,12 @@ public class SingleIncomeController {
     }
 
     @PatchMapping
-    public SingleIncomeResponseDTO patchSingleIncomes(@RequestBody @Valid PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO){
-        return singleIncomeService.patchSingleIncomes(patchSingleExpenseIncomeDTO);
+    public SingleIncomeResponseDTO patchSingleIncomes(Principal principal, @RequestBody @Valid PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO){
+        return singleIncomeService.patchSingleIncomes(principal.getName(), patchSingleExpenseIncomeDTO);
     }
 
     @DeleteMapping
-    public void deleteSingleIncomes(@RequestBody @Valid DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO){
-        singleIncomeService.deleteSingleIncomes(deleteSingleExpenseIncomeDTO);
+    public void deleteSingleIncomes(Principal principal, @RequestBody @Valid DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO){
+        singleIncomeService.deleteSingleIncomes(principal.getName(), deleteSingleExpenseIncomeDTO);
     }
 }
