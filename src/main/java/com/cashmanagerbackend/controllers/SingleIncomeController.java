@@ -11,7 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/single-payments/incomes")
@@ -35,13 +34,13 @@ public class SingleIncomeController {
     }
 
     @PostMapping
-    public SingleIncomeResponseDTO postSingleIncomes(Principal principal, @RequestBody @Valid AddSingleExpenseIncomeDTO addSingleExpenseIncomeDTO){
-        return singleIncomeService.postSingleIncomes(principal.getName(), addSingleExpenseIncomeDTO);
+    public SingleIncomeResponseDTO postSingleIncomes(Principal principal, @RequestBody @Valid AddSingleIncomeDTO addSingleIncomeDTO){
+        return singleIncomeService.postSingleIncomes(principal.getName(), addSingleIncomeDTO);
     }
 
     @PatchMapping
-    public SingleIncomeResponseDTO patchSingleIncomes(Principal principal, @RequestBody @Valid PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO){
-        return singleIncomeService.patchSingleIncomes(principal.getName(), patchSingleExpenseIncomeDTO);
+    public SingleIncomeResponseDTO patchSingleIncomes(Principal principal, @RequestBody @Valid PatchSingleIncomeDTO patchSingleIncomeDTO){
+        return singleIncomeService.patchSingleIncomes(principal.getName(), patchSingleIncomeDTO);
     }
 
     @DeleteMapping

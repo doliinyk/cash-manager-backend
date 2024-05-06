@@ -8,17 +8,17 @@ import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
-public record AddSingleExpenseIncomeDTO(
+public record AddSingleExpenseDTO(
         @Size(max = 500, message = "Description length can't be more than 500 characters long")
         String description,
 
-        @DecimalMin(value = "0.0", message = "Profit must be bigger than 0")
+        @DecimalMin(value = "0.0", message = "Cost must be bigger than 0")
         @DecimalMax(Double.MAX_VALUE + "")
-        double profit,
+        double cost,
 
-        @NotNull(message = "Income date can't be null")
-        OffsetDateTime incomeDate,
-        
+        @NotNull(message = "Expense date can't be null")
+        OffsetDateTime expensesDate,
+
         @NotNull(message = "Category can't be null")
         CategoryResponseDTO category) {
 }

@@ -22,7 +22,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class SingleIncomeServiceImpl implements SingleIncomeService {
-    private static final String SORT_BY = "incomeDate";
     private final SingleIncomeRepository singleIncomeRepository;
     private final SingleIncomeMapper singleIncomeMapper;
     private final UserRepository userRepository;
@@ -36,13 +35,14 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     }
 
     @Override
-    public SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleExpenseIncomeDTO addSingleExpenseIncomeDTO) {
+    @Transactional
+    public SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleIncomeDTO addSingleIncomeDTO) {
         User user = findUserById(id);
 
-        SingleIncome singleIncome = singleIncomeMapper.dtoToEntity(addSingleExpenseIncomeDTO);
+        SingleIncome singleIncome = singleIncomeMapper.dtoToEntity(addSingleIncomeDTO);
         singleIncome.setUser(user);
         singleIncome.setCategory(
-                incomeCategoryRepository.findCategoryInUserByTitle(user, addSingleExpenseIncomeDTO.category().title())
+                incomeCategoryRepository.findCategoryInUserByTitle(user, addSingleIncomeDTO.category().title())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User don't have this category"))
         );
 
@@ -51,10 +51,10 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
 
     @Override
     @Transactional
-    public SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO) {
-        SingleIncome income = findSingleIncomeByIdAndUser(patchSingleExpenseIncomeDTO.id(), findUserById(id));
+    public SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleIncomeDTO patchSingleIncomeDTO) {
+        SingleIncome income = findSingleIncomeByIdAndUser(patchSingleIncomeDTO.id(), findUserById(id));
 
-        singleIncomeMapper.updateEntityFromDto(patchSingleExpenseIncomeDTO, income);
+        singleIncomeMapper.updateEntityFromDto(patchSingleIncomeDTO, income);
 
         return singleIncomeMapper.entityToDTO(income);
     }
