@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 public interface SingleIncomeService {
     Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Pageable pageable);
 
-    SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleExpenseIncomeDTO addSingleExpenseIncomeDTO);
+    SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleIncomeDTO addSingleIncomeDTO);
 
-    SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleExpenseIncomeDTO patchSingleExpenseIncomeDTO);
+    SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleIncomeDTO patchSingleIncomeDTO);
 
     void deleteSingleIncomes(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO);
 
