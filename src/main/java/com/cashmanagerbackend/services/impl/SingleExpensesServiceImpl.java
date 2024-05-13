@@ -45,6 +45,7 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
                 expenseCategoryRepository.findCategoryInUserByTitle(user, addSingleExpenseDTO.category().title())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User don't have this category"))
         );
+        user.setAccount(user.getAccount() - addSingleExpenseDTO.cost());
 
         return singleExpenseMapper.entityToDTO(singleExpenseRepository.save(singleExpense));
     }
@@ -52,9 +53,11 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     @Override
     @Transactional
     public SingleExpenseResponseDTO patchSingleExpenses(String id, PatchSingleExpenseDTO patchSingleExpenseDTO) {
-        SingleExpense expense = findSingleExpenseByIdAndUser(patchSingleExpenseDTO.id(), findUserById(id));
+        User user = findUserById(id);
+        SingleExpense expense = findSingleExpenseByIdAndUser(patchSingleExpenseDTO.id(), user);
 
         singleExpenseMapper.updateEntityFromDto(patchSingleExpenseDTO, expense);
+        user.setAccount((user.getAccount() + expense.getCost()) - patchSingleExpenseDTO.cost());
 
         return singleExpenseMapper.entityToDTO(expense);
     }
@@ -64,6 +67,7 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     public void deleteSingleExpenses(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
         User user = findUserById(id);
         SingleExpense singleExpense = findSingleExpenseByIdAndUser(deleteSingleExpenseIncomeDTO.id(), user);
+        user.setAccount(user.getAccount() + singleExpense.getCost());
 
         singleExpenseRepository.delete(singleExpense);
     }

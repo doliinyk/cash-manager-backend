@@ -45,6 +45,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
                 incomeCategoryRepository.findCategoryInUserByTitle(user, addSingleIncomeDTO.category().title())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User don't have this category"))
         );
+        user.setAccount(user.getAccount() + addSingleIncomeDTO.profit());
 
         return singleIncomeMapper.entityToDTO(singleIncomeRepository.save(singleIncome));
     }
@@ -52,9 +53,11 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     @Override
     @Transactional
     public SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleIncomeDTO patchSingleIncomeDTO) {
-        SingleIncome income = findSingleIncomeByIdAndUser(patchSingleIncomeDTO.id(), findUserById(id));
+        User user = findUserById(id);
+        SingleIncome income = findSingleIncomeByIdAndUser(patchSingleIncomeDTO.id(), user);
 
         singleIncomeMapper.updateEntityFromDto(patchSingleIncomeDTO, income);
+        user.setAccount((user.getAccount() - income.getProfit()) + patchSingleIncomeDTO.profit());
 
         return singleIncomeMapper.entityToDTO(income);
     }
@@ -64,6 +67,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     public void deleteSingleIncomes(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
         User user = findUserById(id);
         SingleIncome singleIncome = findSingleIncomeByIdAndUser(deleteSingleExpenseIncomeDTO.id(), user);
+        user.setAccount(user.getAccount() - singleIncome.getProfit());
 
         singleIncomeRepository.delete(singleIncome);
     }
@@ -94,7 +98,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO) {
         User user = findUserById(id);
 
-        return singleIncomeRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), pageable).map(singleIncomeMapper :: entityToDTO);
+        return singleIncomeRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), pageable).map(singleIncomeMapper::entityToDTO);
     }
 
     private User findUserById(String id) {

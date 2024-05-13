@@ -34,7 +34,6 @@ public class RegularIncome extends BaseEntity {
     @Column(name = "last_payment_date", nullable = false)
     private OffsetDateTime lastPaymentDate;
 
-    @CreatedDate
     @Column(name = "create_date", nullable = false)
     private OffsetDateTime createDate;
 

@@ -29,6 +29,7 @@ CREATE TABLE users_expense_categories
 CREATE TABLE regular_expenses
 (
     id UUID PRIMARY KEY not null,
+    category_id UUID REFERENCES expense_categories(id) not null,
     periodicity bigint not null,
     title VARCHAR (50) NOT NULL,
     description varchar(500),
@@ -75,6 +76,7 @@ CREATE TABLE single_incomes
 CREATE TABLE regular_incomes
 (
     id UUID PRIMARY KEY not null,
+    category_id UUID REFERENCES income_categories(id) not null,
     periodicity bigint not null,
     title VARCHAR (50) NOT NULL,
     description varchar(500),
