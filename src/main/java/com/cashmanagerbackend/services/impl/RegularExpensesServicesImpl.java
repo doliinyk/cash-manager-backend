@@ -42,7 +42,6 @@ public class RegularExpensesServicesImpl implements RegularExpensesServices {
             regularExpense.setCategory(expenseCategoryRepository.findByTitle(addRegularExpensesDTO.category().title())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found")));
             regularExpense = regularExpenseRepository.save(regularExpense);
-            user.getRegularExpenses().add(regularExpense);
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Regular expense with this title already exist");
         }
