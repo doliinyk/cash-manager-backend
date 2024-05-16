@@ -16,7 +16,5 @@ public interface RegularExpenseRepository extends JpaRepository<RegularExpense, 
 
     Page<RegularExpense> findAllByUser(User user, Pageable pageable);
 
-//    Optional<RegularExpense>
-
     Optional<RegularExpense> findByUserIdAndTitle(UUID userId, String title);
 }
