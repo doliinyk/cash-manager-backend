@@ -69,7 +69,7 @@ public class RegularExpensesServicesImpl implements RegularExpensesServices {
     @Transactional
     public RegularExpenseResponseDTO deleteRegularExpenses(String id, DeletePayment deletePayment) {
         RegularExpense regularExpense = regularExpenseRepository.findByUserIdAndTitle(UUID.fromString(id), deletePayment.title()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Regular expense with  this title not found"));
         RegularExpenseResponseDTO regularExpenseResponseDTO = regularExpensesMapper.entityToDto(regularExpense);
         regularExpenseRepository.delete(regularExpense);
         return regularExpenseResponseDTO;
