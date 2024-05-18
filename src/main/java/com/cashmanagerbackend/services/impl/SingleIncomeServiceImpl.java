@@ -2,6 +2,7 @@ package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.SingleIncomeResponseDTO;
+import com.cashmanagerbackend.entities.IncomeCategory;
 import com.cashmanagerbackend.entities.SingleIncome;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.mappers.SingleIncomeMapper;
@@ -72,6 +73,34 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
         singleIncomeRepository.delete(singleIncome);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<SingleIncomeResponseDTO> getSingleIncomesBySize(String id, Pageable pageable, SizeDTO sizeDTO) {
+        User user = findUserById(id);
+
+        if (sizeDTO.from() != null && sizeDTO.to() != null) {
+            if (sizeDTO.from().compareTo(sizeDTO.to()) <= 0) {
+                return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqualAndProfitLessThanEqual(user,
+                        sizeDTO.from(), sizeDTO.to(), pageable).map(singleIncomeMapper::entityToDTO);
+            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+        } else if (sizeDTO.from() != null) {
+            return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqual(user, sizeDTO.from(), pageable)
+                    .map(singleIncomeMapper::entityToDTO);
+        } else if (sizeDTO.to() != null) {
+            return singleIncomeRepository.findAllByUserAndProfitLessThanEqual(user, sizeDTO.to(), pageable)
+                    .map(singleIncomeMapper::entityToDTO);
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<SingleIncomeResponseDTO> getSingleIncomesByCategory(String id, Pageable pageable, CategoryDTO categoryDTO) {
+        IncomeCategory incomeCategory = incomeCategoryRepository.findByTitle(categoryDTO.title()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
+        return singleIncomeRepository.findAllByUserIdAndCategory(UUID.fromString(id), incomeCategory, pageable).map(singleIncomeMapper::entityToDTO);
+    }
     @Override
     @Transactional
     public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO) {

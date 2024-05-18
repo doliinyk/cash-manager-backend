@@ -18,4 +18,8 @@ public interface SingleExpensesService {
     SingleExpenseResponseDTO patchSingleExpenses(String id, PatchSingleExpenseDTO patchSingleExpenseDTO);
 
     void deleteSingleExpenses(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO);
+
+    Page<SingleExpenseResponseDTO> getSingleExpensesBySize(String id, Pageable pageable, SizeDTO sizeDTO);
+
+    Page<SingleExpenseResponseDTO> getSingleExpensesByCategory(String id, Pageable pageable, CategoryDTO categoryDTO);
 }

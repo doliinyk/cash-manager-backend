@@ -33,6 +33,16 @@ public class SingleIncomeController {
         return singleIncomeService.getSingleIncomesByDescription(principal.getName(), pageable, descriptionDTO);
     }
 
+    @GetMapping("/by-size")
+    public Page<SingleIncomeResponseDTO> getSingleIncomesBySize(Principal principal, @PageableDefault Pageable pageable, @RequestBody SizeDTO sizeDTO){
+        return singleIncomeService.getSingleIncomesBySize(principal.getName(), pageable, sizeDTO);
+    }
+
+    @GetMapping("/by-category")
+    public  Page<SingleIncomeResponseDTO> getSingleIncomesByCategory(Principal principal, @PageableDefault Pageable pageable, @RequestBody @Valid CategoryDTO categoryDTO){
+        return singleIncomeService.getSingleIncomesByCategory(principal.getName(), pageable, categoryDTO);
+    }
+
     @PostMapping
     public SingleIncomeResponseDTO postSingleIncomes(Principal principal, @RequestBody @Valid AddSingleIncomeDTO addSingleIncomeDTO){
         return singleIncomeService.postSingleIncomes(principal.getName(), addSingleIncomeDTO);

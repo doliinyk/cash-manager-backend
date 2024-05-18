@@ -2,6 +2,7 @@ package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.SingleExpenseResponseDTO;
+import com.cashmanagerbackend.entities.ExpenseCategory;
 import com.cashmanagerbackend.entities.SingleExpense;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.mappers.SingleExpenseMapper;
@@ -71,8 +72,9 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
 
         singleExpenseRepository.delete(singleExpense);
     }
+
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<SingleExpenseResponseDTO> getSingleExpensesByExpensesDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO){
         User user = findUserById(id);
 
@@ -88,12 +90,41 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
             return singleExpenseRepository.findAllByUserAndExpensesDateLessThanEqual(user, rangeDatesDTO.to(), pageable)
                     .map(singleExpenseMapper::entityToDTO);
         } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Whoops something went wrong");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<SingleExpenseResponseDTO> getSingleExpensesBySize(String id, Pageable pageable, SizeDTO sizeDTO) {
+        User user = findUserById(id);
+
+        if (sizeDTO.from() != null && sizeDTO.to() != null) {
+            if (sizeDTO.from().compareTo(sizeDTO.to()) <= 0) {
+                return singleExpenseRepository.findAllByUserAndCostGreaterThanEqualAndCostLessThanEqual(user,
+                        sizeDTO.from(), sizeDTO.to(), pageable).map(singleExpenseMapper::entityToDTO);
+            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+        } else if (sizeDTO.from() != null) {
+            return singleExpenseRepository.findAllByUserAndCostGreaterThanEqual(user, sizeDTO.from(), pageable)
+                    .map(singleExpenseMapper::entityToDTO);
+        } else if (sizeDTO.to() != null) {
+            return singleExpenseRepository.findAllByUserAndCostLessThanEqual(user, sizeDTO.to(), pageable)
+                    .map(singleExpenseMapper::entityToDTO);
+        } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
         }
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
+    public Page<SingleExpenseResponseDTO> getSingleExpensesByCategory(String id, Pageable pageable, CategoryDTO categoryDTO) {
+        ExpenseCategory expenseCategory = expenseCategoryRepository.findByTitle(categoryDTO.title()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
+        return singleExpenseRepository.findAllByUserIdAndCategory(UUID.fromString(id), expenseCategory, pageable).map(singleExpenseMapper::entityToDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<SingleExpenseResponseDTO> getSingleExpensesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO) {
         User user = findUserById(id);
 

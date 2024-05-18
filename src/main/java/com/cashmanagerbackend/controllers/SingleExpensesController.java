@@ -2,7 +2,6 @@ package com.cashmanagerbackend.controllers;
 
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.SingleExpenseResponseDTO;
-import com.cashmanagerbackend.dtos.responses.SingleIncomeResponseDTO;
 import com.cashmanagerbackend.services.SingleExpensesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +29,18 @@ public class SingleExpensesController {
     }
 
     @GetMapping("/by-description")
-    public Page<SingleExpenseResponseDTO> getSingleExpensesByDescription(Principal principal, @PageableDefault Pageable pageable, @RequestBody DescriptionDTO descriptionDTO){
+    public Page<SingleExpenseResponseDTO> getSingleExpensesByDescription(Principal principal, @PageableDefault Pageable pageable, @RequestBody @Valid DescriptionDTO descriptionDTO){
         return singleExpensesService.getSingleExpensesByDescription(principal.getName(), pageable, descriptionDTO);
+    }
+
+    @GetMapping("/by-size")
+    public Page<SingleExpenseResponseDTO> getSingleExpensesBySize(Principal principal, @PageableDefault Pageable pageable, @RequestBody SizeDTO sizeDTO){
+        return singleExpensesService.getSingleExpensesBySize(principal.getName(), pageable, sizeDTO);
+    }
+
+    @GetMapping("/by-category")
+    public  Page<SingleExpenseResponseDTO> getSingleExpensesByCategory(Principal principal, @PageableDefault Pageable pageable, @RequestBody @Valid CategoryDTO categoryDTO){
+        return singleExpensesService.getSingleExpensesByCategory(principal.getName(), pageable, categoryDTO);
     }
 
     @PostMapping

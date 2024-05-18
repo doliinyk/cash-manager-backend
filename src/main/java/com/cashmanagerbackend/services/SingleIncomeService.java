@@ -17,4 +17,8 @@ public interface SingleIncomeService {
     Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO);
 
     Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO);
+
+    Page<SingleIncomeResponseDTO> getSingleIncomesByCategory(String id, Pageable pageable, CategoryDTO categoryDTO);
+
+    Page<SingleIncomeResponseDTO> getSingleIncomesBySize(String id, Pageable pageable, SizeDTO sizeDTO);
 }
