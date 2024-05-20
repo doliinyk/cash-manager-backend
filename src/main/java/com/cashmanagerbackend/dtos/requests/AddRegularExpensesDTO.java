@@ -1,13 +1,11 @@
 package com.cashmanagerbackend.dtos.requests;
 
 import com.cashmanagerbackend.dtos.responses.CategoryResponseDTO;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 public record AddRegularExpensesDTO(@Positive(message = "Periodicity must be positive")

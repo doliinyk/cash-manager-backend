@@ -1,6 +1,8 @@
 package com.cashmanagerbackend.services.impl;
 
-import com.cashmanagerbackend.dtos.requests.*;
+import com.cashmanagerbackend.dtos.requests.AddSingleIncomeDTO;
+import com.cashmanagerbackend.dtos.requests.DeleteSingleExpenseIncomeDTO;
+import com.cashmanagerbackend.dtos.requests.PatchSingleIncomeDTO;
 import com.cashmanagerbackend.dtos.responses.SingleIncomeResponseDTO;
 import com.cashmanagerbackend.entities.IncomeCategory;
 import com.cashmanagerbackend.entities.SingleIncome;
@@ -17,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.thymeleaf.util.StringUtils;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -27,13 +31,6 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     private final SingleIncomeMapper singleIncomeMapper;
     private final UserRepository userRepository;
     private final IncomeCategoryRepository incomeCategoryRepository;
-
-    @Override
-    @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Pageable pageable) {
-        User user = findUserById(id);
-        return singleIncomeRepository.findAllByUser(user, pageable).map(singleIncomeMapper::entityToDTO);
-    }
 
     @Override
     @Transactional
@@ -75,59 +72,44 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<SingleIncomeResponseDTO> getSingleIncomesBySize(String id, Pageable pageable, SizeDTO sizeDTO) {
+    public Page<SingleIncomeResponseDTO> getSingleIncomes(String id, Pageable pageable, OffsetDateTime fromByDate, OffsetDateTime toByDate, String description, Double fromBySize, Double toBySize, String categoryTitle) {
         User user = findUserById(id);
 
-        if (sizeDTO.from() != null && sizeDTO.to() != null) {
-            if (sizeDTO.from().compareTo(sizeDTO.to()) <= 0) {
-                return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqualAndProfitLessThanEqual(user,
-                        sizeDTO.from(), sizeDTO.to(), pageable).map(singleIncomeMapper::entityToDTO);
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
-        } else if (sizeDTO.from() != null) {
-            return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqual(user, sizeDTO.from(), pageable)
-                    .map(singleIncomeMapper::entityToDTO);
-        } else if (sizeDTO.to() != null) {
-            return singleIncomeRepository.findAllByUserAndProfitLessThanEqual(user, sizeDTO.to(), pageable)
-                    .map(singleIncomeMapper::entityToDTO);
+        if (fromByDate == null && toByDate == null && StringUtils.isEmptyOrWhitespace(description) && fromBySize == null && toBySize == null && StringUtils.isEmptyOrWhitespace(categoryTitle)){
+            return singleIncomeRepository.findAllByUser(user, pageable).map(singleIncomeMapper::entityToDTO);
+        } else if (fromByDate != null || toByDate != null){
+            if (fromByDate != null && toByDate != null) {
+                if (fromByDate.compareTo(toByDate) <= 0) {
+                    return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqualAndIncomeDateLessThanEqual(user,
+                            fromByDate, toByDate, pageable).map(singleIncomeMapper::entityToDTO);
+                } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+            } else if (fromByDate != null) {
+                return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqual(user, fromByDate, pageable)
+                        .map(singleIncomeMapper::entityToDTO);
+            } else {
+                return singleIncomeRepository.findAllByUserAndIncomeDateLessThanEqual(user, toByDate, pageable)
+                        .map(singleIncomeMapper::entityToDTO);
+            }
+        } else if (!StringUtils.isEmptyOrWhitespace(description)) {
+            return singleIncomeRepository.findAllByUserAndDescriptionContains(user, description, pageable).map(singleIncomeMapper:: entityToDTO);
+        } else if (fromBySize != null || toBySize != null) {
+            if (fromBySize != null && toBySize != null) {
+                if (fromBySize.compareTo(toBySize) <= 0) {
+                    return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqualAndProfitLessThanEqual(user,
+                            fromBySize, toBySize, pageable).map(singleIncomeMapper::entityToDTO);
+                } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+            } else if (fromBySize != null) {
+                return singleIncomeRepository.findAllByUserAndProfitGreaterThanEqual(user, fromBySize, pageable)
+                        .map(singleIncomeMapper::entityToDTO);
+            } else {
+                return singleIncomeRepository.findAllByUserAndProfitLessThanEqual(user, toBySize, pageable)
+                        .map(singleIncomeMapper::entityToDTO);
+            }
         } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
+            IncomeCategory incomeCategory = incomeCategoryRepository.findByTitle(categoryTitle).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
+            return singleIncomeRepository.findAllByUserIdAndCategory(UUID.fromString(id), incomeCategory, pageable).map(singleIncomeMapper::entityToDTO);
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByCategory(String id, Pageable pageable, CategoryDTO categoryDTO) {
-        IncomeCategory incomeCategory = incomeCategoryRepository.findByTitle(categoryDTO.title()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
-        return singleIncomeRepository.findAllByUserIdAndCategory(UUID.fromString(id), incomeCategory, pageable).map(singleIncomeMapper::entityToDTO);
-    }
-    @Override
-    @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByIncomeDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO) {
-        User user = findUserById(id);
-
-        if (rangeDatesDTO.from() != null && rangeDatesDTO.to() != null) {
-            if (rangeDatesDTO.from().compareTo(rangeDatesDTO.to()) <= 0) {
-                return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqualAndIncomeDateLessThanEqual(user,
-                        rangeDatesDTO.from(), rangeDatesDTO.to(), pageable).map(singleIncomeMapper::entityToDTO);
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
-        } else if (rangeDatesDTO.from() != null) {
-            return singleIncomeRepository.findAllByUserAndIncomeDateGreaterThanEqual(user, rangeDatesDTO.from(), pageable)
-                    .map(singleIncomeMapper::entityToDTO);
-        } else if (rangeDatesDTO.to() != null) {
-            return singleIncomeRepository.findAllByUserAndIncomeDateLessThanEqual(user, rangeDatesDTO.to(), pageable)
-                    .map(singleIncomeMapper::entityToDTO);
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
-        }
-    }
-
-    @Override
-    @Transactional
-    public Page<SingleIncomeResponseDTO> getSingleIncomesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO) {
-        User user = findUserById(id);
-
-        return singleIncomeRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), pageable).map(singleIncomeMapper::entityToDTO);
     }
 
     private User findUserById(String id) {
