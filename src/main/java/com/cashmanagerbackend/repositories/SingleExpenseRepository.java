@@ -1,5 +1,6 @@
 package com.cashmanagerbackend.repositories;
 
+import com.cashmanagerbackend.entities.ExpenseCategory;
 import com.cashmanagerbackend.entities.SingleExpense;
 import com.cashmanagerbackend.entities.User;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,14 @@ public interface SingleExpenseRepository extends PagingAndSortingRepository<Sing
     Page<SingleExpense> findAllByUserAndExpensesDateGreaterThanEqual(User user, OffsetDateTime from, Pageable pageable);
 
     Page<SingleExpense> findAllByUserAndExpensesDateLessThanEqual(User user, OffsetDateTime to, Pageable pageable);
+
+    Page<SingleExpense> findAllByUserAndCostGreaterThanEqualAndCostLessThanEqual(User user, double from, double to, Pageable pageable);
+
+    Page<SingleExpense> findAllByUserAndCostGreaterThanEqual(User user, double from, Pageable pageable);
+
+    Page<SingleExpense> findAllByUserAndCostLessThanEqual(User user, double to, Pageable pageable);
+
+    Page<SingleExpense> findAllByUserIdAndCategory(UUID id, ExpenseCategory expenseCategory, Pageable pageable);
 
     Page<SingleExpense>  findAllByUserAndDescriptionContains(User user, String description, Pageable pageable);
 

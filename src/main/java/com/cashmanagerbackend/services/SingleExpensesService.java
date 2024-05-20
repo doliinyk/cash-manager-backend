@@ -5,17 +5,15 @@ import com.cashmanagerbackend.dtos.responses.SingleExpenseResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.OffsetDateTime;
+
 public interface SingleExpensesService {
-
-    Page<SingleExpenseResponseDTO> getSingleExpenses(String id, Pageable pageable);
-
-    Page<SingleExpenseResponseDTO> getSingleExpensesByExpensesDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO);
-
-    Page<SingleExpenseResponseDTO> getSingleExpensesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO);
 
     SingleExpenseResponseDTO postSingleExpenses(String id, AddSingleExpenseDTO addSingleExpenseDTO);
 
     SingleExpenseResponseDTO patchSingleExpenses(String id, PatchSingleExpenseDTO patchSingleExpenseDTO);
 
     void deleteSingleExpenses(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO);
+
+    Page<SingleExpenseResponseDTO> getSingleExpenses(String id, Pageable pageable, OffsetDateTime fromByDate, OffsetDateTime toByDate, String description, Double fromBySize, Double toBySize, String categoryTitle);
 }

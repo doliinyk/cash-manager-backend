@@ -2,6 +2,7 @@ package com.cashmanagerbackend.services.impl;
 
 import com.cashmanagerbackend.dtos.requests.*;
 import com.cashmanagerbackend.dtos.responses.SingleExpenseResponseDTO;
+import com.cashmanagerbackend.entities.ExpenseCategory;
 import com.cashmanagerbackend.entities.SingleExpense;
 import com.cashmanagerbackend.entities.User;
 import com.cashmanagerbackend.mappers.SingleExpenseMapper;
@@ -16,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.thymeleaf.util.StringUtils;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -28,10 +31,45 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     private final ExpenseCategoryRepository expenseCategoryRepository;
 
     @Override
-    @Transactional
-    public Page<SingleExpenseResponseDTO> getSingleExpenses(String id, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<SingleExpenseResponseDTO> getSingleExpenses(String id, Pageable pageable, OffsetDateTime fromByDate, OffsetDateTime toByDate, String description, Double fromBySize, Double toBySize, String categoryTitle) {
         User user = findUserById(id);
-        return singleExpenseRepository.findAllByUser(user, pageable).map(singleExpenseMapper::entityToDTO);
+
+        if (fromByDate == null && toByDate == null && StringUtils.isEmptyOrWhitespace(description) && fromBySize == null && toBySize == null && StringUtils.isEmptyOrWhitespace(categoryTitle)){
+            return singleExpenseRepository.findAllByUser(user, pageable).map(singleExpenseMapper::entityToDTO);
+        } else if (fromByDate != null || toByDate != null){
+            if (fromByDate != null && toByDate != null) {
+                if (fromByDate.compareTo(toByDate) <= 0) {
+                    return singleExpenseRepository.findAllByUserAndExpensesDateGreaterThanEqualAndExpensesDateLessThanEqual(user,
+                            fromByDate, toByDate, pageable).map(singleExpenseMapper::entityToDTO);
+                } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+            } else if (fromByDate != null) {
+                return singleExpenseRepository.findAllByUserAndExpensesDateGreaterThanEqual(user, fromByDate, pageable)
+                        .map(singleExpenseMapper::entityToDTO);
+            } else {
+                return singleExpenseRepository.findAllByUserAndExpensesDateLessThanEqual(user, toByDate, pageable)
+                        .map(singleExpenseMapper::entityToDTO);
+            }
+        } else if (!StringUtils.isEmptyOrWhitespace(description)) {
+            return singleExpenseRepository.findAllByUserAndDescriptionContains(user, description, pageable).map(singleExpenseMapper:: entityToDTO);
+        } else if (fromBySize != null || toBySize != null) {
+            if (fromBySize != null && toBySize != null) {
+                if (fromBySize.compareTo(toBySize) <= 0) {
+                    return singleExpenseRepository.findAllByUserAndCostGreaterThanEqualAndCostLessThanEqual(user,
+                            fromBySize, toBySize, pageable).map(singleExpenseMapper::entityToDTO);
+                } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
+            } else if (fromBySize != null) {
+                return singleExpenseRepository.findAllByUserAndCostGreaterThanEqual(user, fromBySize, pageable)
+                        .map(singleExpenseMapper::entityToDTO);
+            } else {
+                return singleExpenseRepository.findAllByUserAndCostLessThanEqual(user, toBySize, pageable)
+                        .map(singleExpenseMapper::entityToDTO);
+            }
+        } else {
+            ExpenseCategory expenseCategory = expenseCategoryRepository.findByTitle(categoryTitle).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with this title not found"));
+            return singleExpenseRepository.findAllByUserIdAndCategory(UUID.fromString(id), expenseCategory, pageable).map(singleExpenseMapper::entityToDTO);
+        }
     }
 
     @Override
@@ -70,34 +108,6 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
         user.setAccount(user.getAccount() + singleExpense.getCost());
 
         singleExpenseRepository.delete(singleExpense);
-    }
-    @Override
-    @Transactional
-    public Page<SingleExpenseResponseDTO> getSingleExpensesByExpensesDate(String id, Pageable pageable, RangeDatesDTO rangeDatesDTO){
-        User user = findUserById(id);
-
-        if (rangeDatesDTO.from() != null && rangeDatesDTO.to() != null) {
-            if (rangeDatesDTO.from().compareTo(rangeDatesDTO.to()) <= 0) {
-                return singleExpenseRepository.findAllByUserAndExpensesDateGreaterThanEqualAndExpensesDateLessThanEqual(user,
-                        rangeDatesDTO.from(), rangeDatesDTO.to(), pageable).map(singleExpenseMapper::entityToDTO);
-            } else throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "From bigger than to");
-        } else if (rangeDatesDTO.from() != null) {
-            return singleExpenseRepository.findAllByUserAndExpensesDateGreaterThanEqual(user, rangeDatesDTO.from(), pageable)
-                    .map(singleExpenseMapper::entityToDTO);
-        } else if (rangeDatesDTO.to() != null) {
-            return singleExpenseRepository.findAllByUserAndExpensesDateLessThanEqual(user, rangeDatesDTO.to(), pageable)
-                    .map(singleExpenseMapper::entityToDTO);
-        } else {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Whoops something went wrong");
-        }
-    }
-
-    @Override
-    @Transactional
-    public Page<SingleExpenseResponseDTO> getSingleExpensesByDescription(String id, Pageable pageable, DescriptionDTO descriptionDTO) {
-        User user = findUserById(id);
-
-        return singleExpenseRepository.findAllByUserAndDescriptionContains(user, descriptionDTO.description(), pageable).map(singleExpenseMapper:: entityToDTO);
     }
 
     private User findUserById(String id) {
