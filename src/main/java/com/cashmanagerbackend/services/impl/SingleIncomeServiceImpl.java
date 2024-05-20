@@ -13,6 +13,8 @@ import com.cashmanagerbackend.repositories.SingleIncomeRepository;
 import com.cashmanagerbackend.repositories.UserRepository;
 import com.cashmanagerbackend.services.SingleIncomeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,10 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.thymeleaf.util.StringUtils;
 
+import java.security.Key;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
+@CacheConfig(cacheNames = "user")
 @RequiredArgsConstructor
 public class SingleIncomeServiceImpl implements SingleIncomeService {
     private final SingleIncomeRepository singleIncomeRepository;
@@ -33,6 +37,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     private final IncomeCategoryRepository incomeCategoryRepository;
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public SingleIncomeResponseDTO postSingleIncomes(String id, AddSingleIncomeDTO addSingleIncomeDTO) {
         User user = findUserById(id);
@@ -49,6 +54,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     }
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public SingleIncomeResponseDTO patchSingleIncomes(String id, PatchSingleIncomeDTO patchSingleIncomeDTO) {
         User user = findUserById(id);
@@ -61,6 +67,7 @@ public class SingleIncomeServiceImpl implements SingleIncomeService {
     }
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public void deleteSingleIncomes(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
         User user = findUserById(id);

@@ -11,6 +11,8 @@ import com.cashmanagerbackend.repositories.SingleExpenseRepository;
 import com.cashmanagerbackend.repositories.UserRepository;
 import com.cashmanagerbackend.services.SingleExpensesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
+@CacheConfig(cacheNames = "user")
 @RequiredArgsConstructor
 public class SingleExpensesServiceImpl implements SingleExpensesService {
     private final SingleExpenseRepository singleExpenseRepository;
@@ -73,6 +76,7 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     }
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public SingleExpenseResponseDTO postSingleExpenses(String id, AddSingleExpenseDTO addSingleExpenseDTO) {
         User user = findUserById(id);
@@ -89,6 +93,7 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     }
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public SingleExpenseResponseDTO patchSingleExpenses(String id, PatchSingleExpenseDTO patchSingleExpenseDTO) {
         User user = findUserById(id);
@@ -101,6 +106,7 @@ public class SingleExpensesServiceImpl implements SingleExpensesService {
     }
 
     @Override
+    @CacheEvict(key = "#id")
     @Transactional
     public void deleteSingleExpenses(String id, DeleteSingleExpenseIncomeDTO deleteSingleExpenseIncomeDTO) {
         User user = findUserById(id);
